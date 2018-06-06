@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		F483552220C57C54006A6EC2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F483552120C57C54006A6EC2 /* Foundation.framework */; };
 		F483552820C586FB006A6EC2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F483552720C586FB006A6EC2 /* main.m */; };
-		F483552D20C80F29006A6EC2 /* Makefile in Sources */ = {isa = PBXBuildFile; fileRef = F483552C20C80F29006A6EC2 /* Makefile */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -31,7 +30,6 @@
 		F483552720C586FB006A6EC2 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = SOURCE_ROOT; };
 		F483552920C58700006A6EC2 /* searchfs.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = searchfs.1; sourceTree = SOURCE_ROOT; };
 		F483552A20C6A544006A6EC2 /* searchfs.1.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = searchfs.1.html; sourceTree = "<group>"; };
-		F483552C20C80F29006A6EC2 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		F4D2B39620C32F8400CD7371 /* searchfs */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = searchfs; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -60,7 +58,6 @@
 			children = (
 				F483552520C586EF006A6EC2 /* README.md */,
 				F483552620C586EF006A6EC2 /* LICENSE.txt */,
-				F483552C20C80F29006A6EC2 /* Makefile */,
 				F483552A20C6A544006A6EC2 /* searchfs.1.html */,
 				F483552920C58700006A6EC2 /* searchfs.1 */,
 				F483552720C586FB006A6EC2 /* main.m */,
@@ -150,7 +147,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F483552D20C80F29006A6EC2 /* Makefile in Sources */,
 				F483552820C586FB006A6EC2 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

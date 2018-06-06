@@ -59,7 +59,7 @@ struct packed_attr_ref {
 
 struct packed_result {
     u_int32_t           size;               // Including size field itself
-    struct fsid         fsid;
+    struct fsid         fs_id;
     struct fsobj_id     obj_id;
 };
 typedef struct packed_result packed_result;
@@ -79,7 +79,6 @@ static const char optstring[] = "v:h";
 
 static struct option long_options[] = {
     {"volume",                  required_argument,      0,  'v'},
-//    {"debug",                   no_argument,            0,  'd'},
     {"help",                    no_argument,            0,  'h'},
     {0,                         0,                      0,    0}
 };
@@ -215,7 +214,7 @@ catalogue_changed:
                 char path_buf[PATH_MAX];
                 ssize_t size = fsgetpath_compat((char *)&path_buf,
                                                 sizeof(path_buf),
-                                                &my_result_p->fsid,
+                                                &my_result_p->fs_id,
                                                 (uint64_t)my_result_p->obj_id.fid_objno |
                                                 ((uint64_t)my_result_p->obj_id.fid_generation << 32));
                 if (size > -1) {

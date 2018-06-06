@@ -3,30 +3,30 @@
 
 <b>NAME</b>
 
-     <b>searchfs</b> &#x2014; fast filename search on HFS+ and APFS volumes
+     <b>searchfs</b> -- fast filename search on HFS+ and APFS volumes
 
 <b>SYNOPSIS</b>
 
-     <b>searchfs</b> [&#x2010;v volume] <u>search</u><b>_<u></b>string</u>
+     <b>searchfs</b> [-v volume] <u>search</u><b>_<u></b>string</u>
 
 <b>DESCRIPTION</b>
 
      <b>searchfs</b> does a fast filename search on HFS+ and APFS volumes. Searching
      takes place at the driver level using the file system catalog via the
-     low&#x2010;level searchfs() function. This means the volume&#x2019;s entire directory
+     low-level searchfs() function. This means the volume's entire directory
      tree can be scanned much faster than with a standard recursive filename
      search.
 
      Paths of files with names matching search_string are printed to STDOUT,
-     one path per line. Only case&#x2010;insensitive search is supported at this
+     one path per line. Only case-insensitive search is supported at this
      time.
 
      The following flags are supported:
 
-     &#x2212;<b>v,</b> &#x2212;&#x2010;<b>volume</b>
+     <b>-v,</b> <b>--volume</b>
               Specify volume to search. Default is the root file system at /
 
-     &#x2212;<b>h,</b> &#x2212;&#x2010;<b>help</b>
+     <b>-h,</b> <b>--help</b>
               Print usage and exit
 
 <b>SEE ALSO</b>

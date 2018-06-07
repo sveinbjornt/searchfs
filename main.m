@@ -75,17 +75,24 @@ static ssize_t fsgetpath_legacy(char *buf, size_t buflen, fsid_t *fsid, uint64_t
 BOOL is_mount_path (NSString *path);
 void print_usage (void);
 
-static const char optstring[] = "v:h";
+static const char optstring[] = "v:dfeh";
 
 static struct option long_options[] = {
     {"volume",                  required_argument,      0,  'v'},
+    {"dirs-only",               no_argument,            0,  'd'},
+    {"files-only",              no_argument,            0,  'f'},
+    {"exact-match-only",        no_argument,            0,  'e'},
     {"help",                    no_argument,            0,  'h'},
     {0,                         0,                      0,    0}
 };
 
+static BOOL dirsOnly = NO;
+static BOOL filesOnly = NO;
+static BOOL exactMatchOnly = NO;
+
 #pragma mark -
 
-int main(int argc, const char * argv[]) {
+int main (int argc, const char * argv[]) {
     NSString *volumePath = DEFAULT_VOLUME;
     
     // Parse getopt
@@ -95,9 +102,21 @@ int main(int argc, const char * argv[]) {
         switch (optch) {
 
             case 'v':
-                volumePath = [@(argv[optind]) stringByResolvingSymlinksInPath];
+                volumePath = [@(optarg) stringByResolvingSymlinksInPath];
                 break;
 
+            case 'd':
+                dirsOnly = YES;
+                break;
+                
+            case 'f':
+                filesOnly = YES;
+                break;
+                
+            case 'e':
+                exactMatchOnly = YES;
+                break;
+                
             case 'h':
             default:
             {
@@ -108,8 +127,8 @@ int main(int argc, const char * argv[]) {
         }
     }
 
-    // Verify mount path
-    if (!is_mount_path(volumePath)) {
+    // Verify that path is the mount path for a file system
+    if (![volumePath isEqualToString:DEFAULT_VOLUME] && !is_mount_path(volumePath)) {
         fprintf(stderr, "Not a volume mount path: %s\n", [volumePath cStringUsingEncoding:NSUTF8StringEncoding]);
         print_usage();
         exit(EX_USAGE);
@@ -130,7 +149,7 @@ int main(int argc, const char * argv[]) {
 
 #pragma mark -
 
-static void start_searchfs_search(const char *volpath, const char *match_string) {
+static void start_searchfs_search (const char *volpath, const char *match_string) {
     int                     err = 0;
     int                     items_found = 0;
     int                     ebusy_count = 0;
@@ -169,7 +188,7 @@ catalogue_changed:
     
     // Pack the searchparams1 into a buffer
     // NOTE: A name appears only in searchparams1
-    strcpy( info1.name, match_string);
+    strcpy(info1.name, match_string);
     info1.ref.attr_dataoffset = sizeof(struct attrreference);
     info1.ref.attr_length = (u_int32_t)strlen(info1.name) + 1;
     info1.size = sizeof(struct attrreference) + info1.ref.attr_length;
@@ -195,7 +214,6 @@ catalogue_changed:
     do {
         char *my_end_ptr;
         char *my_ptr;
-        int i;
         
         err = searchfs(volpath, &search_blk, &matches, 0, search_options, &search_state);
         if (err == -1) {
@@ -206,24 +224,24 @@ catalogue_changed:
             // Unpack the results
             my_ptr = (char *)&result_buffer[0];
             my_end_ptr = (my_ptr + sizeof(result_buffer));
-            for (i = 0; i < matches; ++i) {
-                packed_result_p my_result_p = (packed_result_p) my_ptr;
+            for (int i = 0; i < matches; ++i) {
+                packed_result_p result_p = (packed_result_p)my_ptr;
                 items_found++;
                 
-                // Call private SPI fsgetpath to convert file system object ID to path string
+                // Call private SPI fsgetpath to get path string for file system object ID
                 char path_buf[PATH_MAX];
                 ssize_t size = fsgetpath_compat((char *)&path_buf,
                                                 sizeof(path_buf),
-                                                &my_result_p->fs_id,
-                                                (uint64_t)my_result_p->obj_id.fid_objno |
-                                                ((uint64_t)my_result_p->obj_id.fid_generation << 32));
+                                                &result_p->fs_id,
+                                                (uint64_t)result_p->obj_id.fid_objno |
+                                                ((uint64_t)result_p->obj_id.fid_generation << 32));
                 if (size > -1) {
                     printf("%s\n", path_buf);
                 } else {
-                    fprintf(stderr, "Unable to get path for object ID: %d", my_result_p->obj_id.fid_objno);
+                    fprintf(stderr, "Unable to get path for object ID: %d", result_p->obj_id.fid_objno);
                 }
                 
-                my_ptr = (my_ptr + my_result_p->size);
+                my_ptr = (my_ptr + result_p->size);
                 if (my_ptr > my_end_ptr) {
                     break;
                 }
@@ -236,7 +254,7 @@ catalogue_changed:
             goto catalogue_changed;
         }
         if (!(err == 0 || err == EAGAIN)) {
-            printf( "searchfs failed with error %d - \"%s\" \n", err, strerror(err));
+            printf("searchfs failed with error %d - \"%s\"\n", err, strerror(err));
         }
         search_options &= ~SRCHFS_START;
 
@@ -249,7 +267,7 @@ catalogue_changed:
 // compatibility shim that relies on the volfs support in older versions of the OS
 // See https://forums.developer.apple.com/thread/103162
 
-static ssize_t fsgetpath_compat(char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id) {
+static ssize_t fsgetpath_compat (char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id) {
     if (__builtin_available(macOS 10.13, *)) {
         return fsgetpath(buf, buflen, fsid, obj_id);
     } else {
@@ -257,7 +275,7 @@ static ssize_t fsgetpath_compat(char *buf, size_t buflen, fsid_t *fsid, uint64_t
     }
 }
 
-static ssize_t fsgetpath_legacy(char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id) {
+static ssize_t fsgetpath_legacy (char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id) {
     char volfsPath[64];  // 8 for `/.vol//\0`, 10 for `fsid->val[0]`, 20 for `obj_id`, rounded up for paranoia
     
     snprintf(volfsPath, sizeof(volfsPath), "/.vol/%ld/%llu", (long)fsid->val[0], (unsigned long long)obj_id);
@@ -302,6 +320,6 @@ BOOL is_mount_path (NSString *path) {
 }
 
 void print_usage (void) {
-    fprintf(stderr, "usage: searchfs [-v mount_point] search_term\n");
+    fprintf(stderr, "usage: searchfs [-dfeh] [-v mount_point] search_term\n");
 }
 

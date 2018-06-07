@@ -9,6 +9,7 @@ all:: main
 
 main: main.m
 	gcc $(FRAMEWORKS) -o $(BIN_NAME) $(CFLAGS) main.m
+	strip -x $(BIN_NAME)
 
 install: main
 	cp $(BIN_NAME) $(DEST_DIR)

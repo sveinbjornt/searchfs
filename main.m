@@ -126,6 +126,12 @@ int main (int argc, const char * argv[]) {
                 break;
         }
     }
+    
+    if (dirsOnly && filesOnly) {
+        fprintf(stderr, "-d and -f are exclusive options\n");
+        print_usage();
+        exit(EX_USAGE);
+    }
 
     // Verify that path is the mount path for a file system
     if (![volumePath isEqualToString:DEFAULT_VOLUME] && !is_mount_path(volumePath)) {
@@ -143,7 +149,7 @@ int main (int argc, const char * argv[]) {
     // Do search
     const char *search_string = argv[optind];
     start_searchfs_search([volumePath cStringUsingEncoding:NSUTF8StringEncoding], search_string);
-    
+ 
     return EX_OK;
 }
 
@@ -209,8 +215,21 @@ catalogue_changed:
     search_blk.timelimit.tv_sec = 1;
     search_blk.timelimit.tv_usec = 0;
     
-    search_options = (SRCHFS_START | SRCHFS_MATCHPARTIALNAMES |
-                         SRCHFS_MATCHFILES | SRCHFS_MATCHDIRS);
+    // Configure search options
+    search_options = SRCHFS_START;
+    
+    if (!dirsOnly) {
+        search_options |= SRCHFS_MATCHFILES;
+    }
+    
+    if (!filesOnly) {
+        search_options |= SRCHFS_MATCHDIRS;
+    }
+    
+    if (!exactMatchOnly) {
+        search_options |= SRCHFS_MATCHPARTIALNAMES;
+    }
+    
     do {
         char *my_end_ptr;
         char *my_ptr;
@@ -238,7 +257,7 @@ catalogue_changed:
                 if (size > -1) {
                     printf("%s\n", path_buf);
                 } else {
-                    fprintf(stderr, "Unable to get path for object ID: %d", result_p->obj_id.fid_objno);
+                    fprintf(stderr, "Unable to get path for object ID: %d\n", result_p->obj_id.fid_objno);
                 }
                 
                 my_ptr = (my_ptr + result_p->size);

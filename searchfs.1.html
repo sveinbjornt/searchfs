@@ -7,36 +7,44 @@
 
 <b>SYNOPSIS</b>
 
-     <b>searchfs</b> [-v volume] <u>search</u><b>_<u></b>string</u>
+     <b>searchfs</b> [-dfeh] [-v mount_point] <u>search</u><b>_<u></b>term</u>
 
 <b>DESCRIPTION</b>
 
-     <b>searchfs</b> does a fast filename search on HFS+ and APFS volumes. Searching
-     takes place at the driver level using the file system catalog via the
-     low-level searchfs() function. This means the volume's entire directory
-     tree can be scanned much faster than with a standard recursive filename
-     search.
+     <b>searchfs</b> does filename search on HFS+ and APFS volumes. Searching takes
+     place at the driver level using the file system catalog via the low-level
+     searchfs() function. This means the volume's entire directory tree can be
+     scanned much faster than with a standard recursive filename search.
 
      Paths of files with names containing search_string are printed to STDOUT,
-     one path per line. Only case-insensitive search is supported at this
-     time.
+     one path per line. Only case-insensitive search is supported at this time
+     due to limitations in the Darwin low-level API.
 
      The following flags are supported:
 
      <b>-v,</b> <b>--volume</b>
-              Specify volume to search. Default is the root file system at /
+              Specify volume to search. Default is the root file at /
+
+     <b>-d,</b> <b>--dirs-only</b>
+              Return only matching directories
+
+     <b>-f,</b> <b>--files-only</b>
+              Return only matching files
+
+     <b>-e,</b> <b>--exact-match-only</b>
+              Return only exact matches
 
      <b>-h,</b> <b>--help</b>
               Print usage and exit
 
 <b>SEE ALSO</b>
 
-     find(1), locate(1)
+     find(1), locate(1), mdfind(1), searchfs(2)
 
 <b>AUTHORS</b>
 
      Sveinbjorn Thordarson &lt;sveinbjorn@sveinbjorn.org&gt;
 
-Darwin                            Jun 5, 2018                           Darwin
+Darwin                            Jun 7, 2018                           Darwin
 </font></pre>
 </body></html>

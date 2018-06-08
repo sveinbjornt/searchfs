@@ -11,18 +11,19 @@
 .Ar search_term
 .Sh DESCRIPTION
 .Nm
-does a fast filename search on HFS+ and APFS volumes. Searching takes place
+does filename search on HFS+ and APFS volumes. Searching takes place
 at the driver level using the file system catalog via the low-level searchfs()
 function. This means the volume's entire directory tree can be scanned much
 faster than with a standard recursive filename search.
 .Pp
 Paths of files with names containing search_string are printed to STDOUT, one
-path per line. Only case-insensitive search is supported at this time.
+path per line. Only case-insensitive search is supported at this time due to
+limitations in the Darwin low-level API.
 .Pp
 The following flags are supported:
 .Bl -tag -width -indent
 .It Fl v, -volume
-Specify volume to search. Default is the root file system at /
+Specify volume to search. Default is the root file at /
 .It Fl d, -dirs-only
 Return only matching directories
 .It Fl f, -files-only
@@ -34,6 +35,8 @@ Print usage and exit
 .El
 .Sh SEE ALSO
 .Xr find 1 ,
-.Xr locate 1
+.Xr locate 1 ,
+.Xr mdfind 1 ,
+.Xr searchfs 2
 .Sh AUTHORS
 .An Sveinbjorn Thordarson <sveinbjorn@sveinbjorn.org>

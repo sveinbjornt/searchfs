@@ -2,11 +2,11 @@
 
 <img src="http://sveinbjorn.org/images/executable_icon.jpg" width="128" height="128" alt="executable icon" style="float: right; margin-left: 20px; margin-bottom: 20px;" align="right">
 
-`searchfs` is a macOS command line tool to quickly search by filename on HFS+ and APFS volumes. Searching takes place at the driver level using the file system catalog. This means the volume's entire directory tree can be scanned much faster than with a standard recursive filename search using `find`.  Due to limitations in the underlying Darwin API, only case-insensitive filename matching is supported at this time.
+`searchfs` is a macOS command line tool to quickly search by filename on entire HFS+ and APFS volumes. Searching takes place at the driver level using the file system catalog. This means the volume's directory tree can be scanned much faster than with a standard recursive filename search using `find`.  Due to limitations in the underlying Darwin API, only case-insensitive filename matching is supported at this time.
 
 ## Download
 
-* [Download binary](https://sveinbjorn.org/files/software/searchfs.zip) (~20 KB, Intel 64-bit, macOS 10.8 or later)
+* [Download searchfs binary](https://sveinbjorn.org/files/software/searchfs.zip) (~20 KB, Intel 64-bit, macOS 10.8 or later)
 * [searchfs man page](https://sveinbjorn.org/files/manpages/searchfs.1.html)
 
 ## Performance
@@ -26,11 +26,11 @@ $ time find / -name "*something*"
 9,53s user 67,64s system 49% cpu 2:37,39 total
 ```
 
-Although I have yet to test this, `searchfs` is likely to be even faster relative to `find` on hard disk drives, which have higher seek times.
+Although I have yet to test this, `searchfs` is probably *much* faster relative to `find` on hard disk drives, which have higher seek times.
 
 ## History
 
-Apple added file system catalog search to Mac OS with the introduction of the Hiearchical File System (HFS) in 1985. HFS replaced the previous flat table structure in the old MFS file system with a catalog file using a B-tree structure. Unlike Windows' FAT file system, HFS (and later, HFS+) thus arranged the entire directory tree into one large file on the disk, with interlinked nodes that did not match the hierarchical folder structure. This meant that volumes could be searched very quickly regardless of size.
+Apple added file system catalog search to Mac OS with the introduction of the Hiearchical File System (HFS) back in 1985. HFS replaced the previous flat table structure in the old MFS file system with a catalog file using a B-tree structure. Unlike Windows' FAT file system, HFS (and later, HFS+) thus arranged the entire directory tree into one large file on the disk, with interlinked nodes that did not match the hierarchical folder structure. This meant that volumes could be searched very quickly regardless of size.
 
 The Classic Mac OS exposed this functionality via the FSCatalogSearch() function, which iterated efficiently over the nodes, thus minimizing disk seek times. In the pre-SSD era, this gave the Mac a significant performance advantage over Windows when it came to full-volume search. For a long time, FSCatalogSearch continued to be available in Mac OS X / macOS via the Carbon APIs but it has now been deprecated and does not support APFS, Apple's new file system.
 

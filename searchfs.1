@@ -1,4 +1,4 @@
-.Dd Jun 5, 2018
+.Dd Jun 7, 2018
 .Dt SEARCHFS 1
 .Os Darwin
 .Sh NAME
@@ -6,8 +6,9 @@
 .Nd fast filename search on HFS+ and APFS volumes
 .Sh SYNOPSIS
 .Nm
-.Op  -v volume
-.Ar search_string
+.Op  -dfeh
+.Op  -v mount_point
+.Ar search_term
 .Sh DESCRIPTION
 .Nm
 does a fast filename search on HFS+ and APFS volumes. Searching takes place
@@ -22,6 +23,12 @@ The following flags are supported:
 .Bl -tag -width -indent
 .It Fl v, -volume
 Specify volume to search. Default is the root file system at /
+.It Fl d, -dirs-only
+Return only matching directories
+.It Fl f, -files-only
+Return only matching files
+.It Fl e, -exact-match-only
+Return only exact matches
 .It Fl h, -help
 Print usage and exit
 .El

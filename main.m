@@ -141,7 +141,7 @@ int main (int argc, const char * argv[]) {
     }
     
     if (optind >= argc) {
-        fprintf(stderr, "Missing argument\n");
+        fprintf(stderr, "Missing argument.\n");
         print_usage();
         exit(EX_USAGE);
     }

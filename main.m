@@ -69,9 +69,9 @@ typedef struct packed_result *packed_result_p;
 #define MAX_EBUSY_RETRIES   5
 #define DEFAULT_VOLUME      @"/"
 
-static void start_searchfs_search(const char *volpath, const char *match_string);
-static ssize_t fsgetpath_compat(char * buf, size_t buflen, fsid_t * fsid, uint64_t obj_id);
-static ssize_t fsgetpath_legacy(char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id);
+static void do_searchfs_search (const char *volpath, const char *match_string);
+static ssize_t fsgetpath_compat (char * buf, size_t buflen, fsid_t * fsid, uint64_t obj_id);
+static ssize_t fsgetpath_legacy (char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id);
 BOOL is_mount_path (NSString *path);
 void print_usage (void);
 
@@ -128,14 +128,14 @@ int main (int argc, const char * argv[]) {
     }
     
     if (dirsOnly && filesOnly) {
-        fprintf(stderr, "-d and -f are exclusive options\n");
+        fprintf(stderr, "-d and -f are mutually exclusive options\n");
         print_usage();
         exit(EX_USAGE);
     }
 
     // Verify that path is the mount path for a file system
     if (![volumePath isEqualToString:DEFAULT_VOLUME] && !is_mount_path(volumePath)) {
-        fprintf(stderr, "Not a volume mount path: %s\n", [volumePath cStringUsingEncoding:NSUTF8StringEncoding]);
+        fprintf(stderr, "Not a volume mount point: %s\n", [volumePath cStringUsingEncoding:NSUTF8StringEncoding]);
         print_usage();
         exit(EX_USAGE);
     }
@@ -148,14 +148,14 @@ int main (int argc, const char * argv[]) {
     
     // Do search
     const char *search_string = argv[optind];
-    start_searchfs_search([volumePath cStringUsingEncoding:NSUTF8StringEncoding], search_string);
+    do_searchfs_search([volumePath cStringUsingEncoding:NSUTF8StringEncoding], search_string);
  
     return EX_OK;
 }
 
 #pragma mark -
 
-static void start_searchfs_search (const char *volpath, const char *match_string) {
+static void do_searchfs_search (const char *volpath, const char *match_string) {
     int                     err = 0;
     int                     items_found = 0;
     int                     ebusy_count = 0;
@@ -231,9 +231,6 @@ catalogue_changed:
     }
     
     do {
-        char *my_end_ptr;
-        char *my_ptr;
-        
         err = searchfs(volpath, &search_blk, &matches, 0, search_options, &search_state);
         if (err == -1) {
             err = errno;
@@ -241,10 +238,10 @@ catalogue_changed:
         
         if ((err == 0 || err == EAGAIN) && matches > 0) {
             // Unpack the results
-            my_ptr = (char *)&result_buffer[0];
-            my_end_ptr = (my_ptr + sizeof(result_buffer));
+            char *ptr = (char *)&result_buffer[0];
+            char *end_ptr = (ptr + sizeof(result_buffer));
             for (int i = 0; i < matches; ++i) {
-                packed_result_p result_p = (packed_result_p)my_ptr;
+                packed_result_p result_p = (packed_result_p)ptr;
                 items_found++;
                 
                 // Call private SPI fsgetpath to get path string for file system object ID
@@ -255,13 +252,13 @@ catalogue_changed:
                                                 (uint64_t)result_p->obj_id.fid_objno |
                                                 ((uint64_t)result_p->obj_id.fid_generation << 32));
                 if (size > -1) {
-                    printf("%s\n", path_buf);
+                    fprintf(stdout, "%s\n", path_buf);
                 } else {
                     fprintf(stderr, "Unable to get path for object ID: %d\n", result_p->obj_id.fid_objno);
                 }
                 
-                my_ptr = (my_ptr + result_p->size);
-                if (my_ptr > my_end_ptr) {
+                ptr = (ptr + result_p->size);
+                if (ptr > end_ptr) {
                     break;
                 }
             }
@@ -269,12 +266,14 @@ catalogue_changed:
         
         // EBUSY indicates catalogue change; retry a few times.
         if ((err == EBUSY) && (ebusy_count++ < MAX_EBUSY_RETRIES)) {
-            //fprintf(stderr, "Busy, retrying");
+            //fprintf(stderr, "EBUSY, trying again");
             goto catalogue_changed;
         }
-        if (!(err == 0 || err == EAGAIN)) {
-            printf("searchfs failed with error %d - \"%s\"\n", err, strerror(err));
+        
+        if (err != 0 && err != EAGAIN) {
+            fprintf(stderr, "searchfs() function failed with error %d - \"%s\"\n", err, strerror(err));
         }
+        
         search_options &= ~SRCHFS_START;
 
     } while (err == EAGAIN);

@@ -17,7 +17,7 @@ install: main
 
 uninstall:
 	rm $(DEST_DIR)$(BIN_NAME)
-	rm $(MAN_NAME)$(MAN_DIR)
+	rm $(MAN_DIR)$(MAN_NAME)
 
 clean:
 	rm -rf *.o searchfs 2> /dev/null

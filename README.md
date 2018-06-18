@@ -6,7 +6,7 @@
 
 ## Download
 
-* [Download searchfs binary](https://sveinbjorn.org/files/software/searchfs.zip) (<10 KB, Intel 64-bit, macOS 10.8 or later)
+* [⇩ Download searchfs binary](https://sveinbjorn.org/files/software/searchfs.zip) (<20 KB, Intel 64-bit, macOS 10.8 or later)
 * [searchfs man page](https://sveinbjorn.org/files/manpages/searchfs.1.html)
 
 ## Build
@@ -16,7 +16,7 @@
 * `make`
 * `make install`
 
-Installs into /usr/local/bin/
+Installs binary into /usr/local/bin/
 
 ## Performance
 
@@ -35,7 +35,7 @@ $ time find / -name "*something*"
 9,53s user 67,64s system 49% cpu 2:37,39 total
 ```
 
-Although I have yet to test this, `searchfs` is probably *much* faster than `find` on hard disk drives, which have higher seek times.
+Although I have yet to test this properly, `searchfs` is probably *much* faster than `find` on hard disk drives, which have higher seek times.
 
 ## History
 

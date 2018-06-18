@@ -72,8 +72,9 @@ typedef struct packed_result *packed_result_p;
 static void do_searchfs_search (const char *volpath, const char *match_string);
 static ssize_t fsgetpath_compat (char * buf, size_t buflen, fsid_t * fsid, uint64_t obj_id);
 static ssize_t fsgetpath_legacy (char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id);
-BOOL is_mount_path (NSString *path);
-void print_usage (void);
+static BOOL is_mount_path (NSString *path);
+static BOOL vol_supports_searchfs (NSString *path);
+static void print_usage (void);
 
 static const char optstring[] = "v:dfeh";
 
@@ -138,6 +139,12 @@ int main (int argc, const char * argv[]) {
         fprintf(stderr, "Not a volume mount point: %s\n", [volumePath cStringUsingEncoding:NSUTF8StringEncoding]);
         print_usage();
         exit(EX_USAGE);
+    }
+    
+    // Verify that volume supports catalog search
+    if (!vol_supports_searchfs(volumePath)) {
+        fprintf(stderr, "Voume does not support catalog search: %s\n", [volumePath cStringUsingEncoding:NSUTF8StringEncoding]);
+        exit(EX_UNAVAILABLE);
     }
     
     if (optind >= argc) {
@@ -326,7 +333,7 @@ static ssize_t fsgetpath_legacy (char *buf, size_t buflen, fsid_t *fsid, uint64_
 
 #pragma mark - util
 
-BOOL is_mount_path (NSString *path) {
+static BOOL is_mount_path (NSString *path) {
     NSArray *mountPaths = [[NSFileManager defaultManager] mountedVolumeURLsIncludingResourceValuesForKeys:nil options:0];
     for (NSURL *mountPathURL in mountPaths) {
         if ([path isEqualToString:[mountPathURL path]]) {
@@ -337,7 +344,41 @@ BOOL is_mount_path (NSString *path) {
     return NO;
 }
 
-void print_usage (void) {
-    fprintf(stderr, "usage: searchfs [-dfeh] [-v mount_point] search_term\n");
+static BOOL vol_supports_searchfs (NSString *path) {
+    
+    struct vol_attr_buf {
+        u_int32_t               size;
+        vol_capabilities_attr_t vol_capabilities;
+    } __attribute__((aligned(4), packed));
+    
+    const char *p = [path cStringUsingEncoding:NSUTF8StringEncoding];
+    
+    struct attrlist attrList;
+    memset(&attrList, 0, sizeof(attrList));
+    attrList.bitmapcount = ATTR_BIT_MAP_COUNT;
+    attrList.volattr = (ATTR_VOL_INFO | ATTR_VOL_CAPABILITIES);
+    
+    struct vol_attr_buf attrBuf;
+    memset(&attrBuf, 0, sizeof(attrBuf));
+    
+    int err = getattrlist(p, &attrList, &attrBuf, sizeof(attrBuf), 0);
+    if (err != 0) {
+        err = errno;
+        fprintf(stderr, "Error %d getting attrs for volume %s", err, p);
+        return NO;
+    }
+    
+    assert(attrBuf.size == sizeof(attrBuf));
+        
+    if ((attrBuf.vol_capabilities.valid[VOL_CAPABILITIES_INTERFACES] & VOL_CAP_INT_SEARCHFS) == VOL_CAP_INT_SEARCHFS) {
+        if ((attrBuf.vol_capabilities.capabilities[VOL_CAPABILITIES_INTERFACES] & VOL_CAP_INT_SEARCHFS) == VOL_CAP_INT_SEARCHFS) {
+            return YES;
+        }
+    }
+    
+    return NO;
 }
 
+static void print_usage (void) {
+    fprintf(stderr, "usage: searchfs [-dfeh] [-v mount_point] search_term\n");
+}

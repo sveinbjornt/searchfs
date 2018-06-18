@@ -14,7 +14,7 @@
      <b>searchfs</b> does filename search on HFS+ and APFS volumes. Searching takes
      place at the driver level using the file system catalog via the low-level
      searchfs() function. This means the volume's entire directory tree can be
-     scanned much faster than with a standard recursive filename search.
+     scanned much faster than with a standard recursive directory search.
 
      Paths of files with names containing search_term are printed to STDOUT,
      one path per line. Only case-insensitive search is supported at this time
@@ -32,7 +32,7 @@
               Return only matching files
 
      <b>-e,</b> <b>--exact-match-only</b>
-              Return only exact matches
+              Return only exact filename matches
 
      <b>-h,</b> <b>--help</b>
               Print usage and exit

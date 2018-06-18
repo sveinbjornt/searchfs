@@ -45,6 +45,10 @@ The Classic Mac OS exposed this functionality via the FSCatalogSearch() function
 
 However, catalog search for both HFS+ and APFS remains available in Darwin's low-level system libraries via the [searchfs()](https://www.unix.com/man-page/osx/2/searchfs/) function. The `searchfs` program makes use of this function.
 
+## TODO
+
+* The API supports searching for files based on creation, modification, access date, based on finder flags (deprecated file and creator types), and so on. Add that.
+
 ## BSD License
 
 Copyright © 2017-2018 Sveinbjorn Thordarson <a href="mailto:sveinbjorn@sveinbjorn.org">&lt;sveinbjorn@sveinbjorn.org&gt;</a>

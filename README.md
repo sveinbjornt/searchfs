@@ -7,16 +7,16 @@
 ## Download
 
 * [⇩ Download searchfs binary](https://sveinbjorn.org/files/software/searchfs.zip) (<20 KB, Intel 64-bit, macOS 10.8 or later)
-* [searchfs man page](https://sveinbjorn.org/files/manpages/searchfs.1.html)
+* [searchfs man page](https://sveinbjorn.org/files/manpages/searchfs.1.html) (HTML)
 
-## Build
+## Build & Install
 
 * `git clone https://github.com/sveinbjornt/searchfs.git`
 * `cd searchfs`
 * `make`
 * `make install`
 
-Installs binary into /usr/local/bin/
+Installs binary into <code>/usr/local/bin/</code>. Man page goes into <code>/usr/local/share/man/man1/</code>.
 
 ## Performance
 

@@ -1,6 +1,7 @@
 build/
 DerivedData
 searchfs
+searchfs.zip
 ## Various settings
 *.pbxuser
 !default.pbxuser

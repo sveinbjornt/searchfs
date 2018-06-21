@@ -16,26 +16,46 @@
      searchfs() function. This means the volume's entire directory tree can be
      scanned much faster than with a standard recursive directory search.
 
-     Paths of files with names containing search_term are printed to STDOUT,
-     one path per line. Only case-insensitive search is supported at this time
-     due to limitations in the low-level Darwin API.
+     Paths of files and directories with names containing search_term are
+     printed to STDOUT, one path per line. Search is case-insensitive by
+     default
 
      The following flags are supported:
 
      <b>-v,</b> <b>--volume</b>
-              Specify volume to search. Default is the root file system at /
+              Specify volume to search. Default is the root file system at /.
 
      <b>-d,</b> <b>--dirs-only</b>
-              Return only matching directories
+              Return only matching directories.
 
      <b>-f,</b> <b>--files-only</b>
-              Return only matching files
+              Return only matching files.
 
      <b>-e,</b> <b>--exact-match-only</b>
-              Return only exact filename matches
+              Return only exact filename matches.
+
+     <b>-s,</b> <b>--case-sensitive</b>
+              Case sensitive matching (involves expensive regex filtering of
+              results from the Darwin API searchfs() API).
 
      <b>-h,</b> <b>--help</b>
-              Print usage and exit
+              Print usage and exit.
+
+<b>EXAMPLES</b>
+
+     Find directories with name matching 'something' on root volume:
+
+           searchfs -d something
+
+     Find file with the exact name 'file.txt' on volume 'SomeHD':
+
+           searchfs -v /Volumes/SomeHD -e file.txt
+
+     List all files on the root volume ('' matches everything):
+
+           searchfs ''
+
+     And so on and so forth...
 
 <b>SEE ALSO</b>
 

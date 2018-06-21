@@ -2,7 +2,9 @@
 
 <img src="http://sveinbjorn.org/images/executable_icon.jpg" width="128" height="128" alt="executable icon" style="float: right; margin-left: 20px; margin-bottom: 20px;" align="right">
 
-`searchfs` is a macOS command line tool to quickly search by filename on entire HFS+ and APFS volumes. Searching takes place at the driver level using the file system catalog. This means the volume's directory tree can be scanned much faster than with a standard recursive filename search using `find`.  Due to limitations in the underlying Darwin API, only case-insensitive filename matching is supported at this time.
+`searchfs` is a Mac command line tool to quickly search by filename on entire HFS+ and APFS volumes. Searching takes place at the driver level using the file system catalog. This means the volume's directory tree can be scanned much faster than with a standard recursive filename search using `find`.  
+
+Search is case-insensitive by default. See the [man page]((https://sveinbjorn.org/files/manpages/searchfs.1.html)) for details.
 
 ## Download
 
@@ -47,7 +49,7 @@ However, catalog search for both HFS+ and APFS remains available in Darwin's low
 
 ## TODO
 
-* The API supports searching for files based on creation, modification, access date, based on finder flags (deprecated file and creator types), and so on. Add that.
+* The API supports searching the catalog for files based on creation, modification, access date, finder flags, deprecated old-school file and creator types,, and so on. Add that.
 
 ## BSD License
 

@@ -70,6 +70,7 @@ typedef struct packed_result *packed_result_p;
 #define DEFAULT_VOLUME      @"/"
 
 static void do_searchfs_search (const char *volpath, const char *match_string);
+static BOOL filter_result (const char *path, const char *match_string);
 static ssize_t fsgetpath_compat (char * buf, size_t buflen, fsid_t * fsid, uint64_t obj_id);
 static ssize_t fsgetpath_legacy (char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id);
 static BOOL is_mount_path (NSString *path);
@@ -83,6 +84,7 @@ static struct option long_options[] = {
     {"dirs-only",               no_argument,            0,  'd'},
     {"files-only",              no_argument,            0,  'f'},
     {"exact-match-only",        no_argument,            0,  'e'},
+    {"case-sensitive",          no_argument,            0,  's'},
     {"help",                    no_argument,            0,  'h'},
     {0,                         0,                      0,    0}
 };
@@ -90,13 +92,14 @@ static struct option long_options[] = {
 static BOOL dirsOnly = NO;
 static BOOL filesOnly = NO;
 static BOOL exactMatchOnly = NO;
+static BOOL caseSensitive = NO;
 
 #pragma mark -
 
 int main (int argc, const char * argv[]) {
     NSString *volumePath = DEFAULT_VOLUME;
     
-    // Parse getopt
+    // Parse options
     int optch;
     int long_index = 0;
     while ((optch = getopt_long(argc, (char *const *)argv, optstring, long_options, &long_index)) != -1) {
@@ -116,6 +119,10 @@ int main (int argc, const char * argv[]) {
                 
             case 'e':
                 exactMatchOnly = YES;
+                break;
+                
+            case 's':
+                caseSensitive = YES;
                 break;
                 
             case 'h':
@@ -163,6 +170,7 @@ int main (int argc, const char * argv[]) {
 #pragma mark -
 
 static void do_searchfs_search (const char *volpath, const char *match_string) {
+    // See "man 2 searchfs" for further details
     int                     err = 0;
     int                     items_found = 0;
     int                     ebusy_count = 0;
@@ -259,7 +267,9 @@ catalogue_changed:
                                                 (uint64_t)result_p->obj_id.fid_objno |
                                                 ((uint64_t)result_p->obj_id.fid_generation << 32));
                 if (size > -1) {
-                    fprintf(stdout, "%s\n", path_buf);
+                    if (strlen(match_string) > 0 && !filter_result(path_buf, match_string)) {
+                        fprintf(stdout, "%s\n", path_buf);
+                    }
                 } else {
                     fprintf(stderr, "Unable to get path for object ID: %d\n", result_p->obj_id.fid_objno);
                 }
@@ -284,6 +294,24 @@ catalogue_changed:
         search_options &= ~SRCHFS_START;
 
     } while (err == EAGAIN);
+}
+
+#pragma mark - post-processing
+
+BOOL filter_result (const char *path, const char *match_string) {
+    if (caseSensitive) {
+        NSString *escMatch = [NSRegularExpression escapedTemplateForString:@(match_string)];
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:escMatch
+                                                                               options:0
+                                                                                 error:nil];
+        NSString *pathStr = @(path);
+        NSTextCheckingResult *res = [regex firstMatchInString:pathStr
+                                                      options:0
+                                                        range:NSMakeRange(0, [pathStr length])];
+        return (res == nil);
+    }
+    
+    return NO;
 }
 
 #pragma mark - fsgetpath compatibility shim

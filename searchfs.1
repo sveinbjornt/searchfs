@@ -31,7 +31,7 @@ Return only matching files.
 .It Fl e, -exact-match-only
 Return only exact filename matches.
 .It Fl s, -case-sensitive
-Case sensitive matching (involves postprocessing with regular expressions).
+Case sensitive matching.
 .It Fl h, -help
 Print usage and exit.
 .El
@@ -43,12 +43,6 @@ Find directories with name matching 'something' on root volume:
 Find file with the exact name 'file.txt' on volume 'SomeHD':
 .Pp
 .Dl searchfs -v "/Volumes/SomeHD" -e "file.txt"
-.Pp
-List all files on the root volume (empty string matches everything):
-.Pp
-.Dl searchfs ''
-.Pp
-And so on and so forth...
 .Pp
 .Sh SEE ALSO
 .Xr find 1 ,

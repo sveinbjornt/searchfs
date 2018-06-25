@@ -22,14 +22,14 @@ Installs binary into <code>/usr/local/bin/</code>. Man page goes into <code>/usr
 
 ## Performance
 
-According to my benchmarks, `searchfs` runs about 35-40% faster than `find` under typical conditions.
+According to my benchmarks, `searchfs` runs about 35-50% faster than `find` under typical conditions.
 
 The following are benchmark results on a 2012 Retina MacBook Pro with an Apple-supplied 512 GB SSD running an APFS file system containing about 2 million files:
 
 ### searchfs
 ```shell
 $ time searchfs "something"
-0,01s user 33,15s system 32% cpu 1:41,59 total
+0,01s user 33,15s system 32% cpu 1:33,59 total
 ```
 ### /usr/bin/find
 ```shell

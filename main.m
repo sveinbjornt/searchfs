@@ -65,7 +65,7 @@ struct packed_result {
 typedef struct packed_result packed_result;
 typedef struct packed_result *packed_result_p;
 
-#define MAX_MATCHES         10
+#define MAX_MATCHES         20
 #define MAX_EBUSY_RETRIES   5
 #define DEFAULT_VOLUME      @"/"
 
@@ -77,7 +77,7 @@ static BOOL is_mount_path (NSString *path);
 static BOOL vol_supports_searchfs (NSString *path);
 static void print_usage (void);
 
-static const char optstring[] = "v:dfeh";
+static const char optstring[] = "v:dfesh";
 
 static struct option long_options[] = {
     {"volume",                  required_argument,      0,  'v'},
@@ -252,9 +252,11 @@ catalogue_changed:
         }
         
         if ((err == 0 || err == EAGAIN) && matches > 0) {
+            
             // Unpack the results
             char *ptr = (char *)&result_buffer[0];
             char *end_ptr = (ptr + sizeof(result_buffer));
+            
             for (int i = 0; i < matches; ++i) {
                 packed_result_p result_p = (packed_result_p)ptr;
                 items_found++;

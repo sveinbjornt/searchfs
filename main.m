@@ -76,15 +76,23 @@ static ssize_t fsgetpath_legacy (char *buf, size_t buflen, fsid_t *fsid, uint64_
 static BOOL is_mount_path (NSString *path);
 static BOOL vol_supports_searchfs (NSString *path);
 static void print_usage (void);
+static void print_version (void);
 
-static const char optstring[] = "v:dfesh";
+static const float program_version = 1.0f;
+
+static const char optstring[] = "v:dfespixnoh";
 
 static struct option long_options[] = {
     {"volume",                  required_argument,      0,  'v'},
     {"dirs-only",               no_argument,            0,  'd'},
     {"files-only",              no_argument,            0,  'f'},
-    {"exact-match-only",        no_argument,            0,  'e'},
+    {"exact-match",             no_argument,            0,  'e'},
     {"case-sensitive",          no_argument,            0,  's'},
+    {"skip-packages",           no_argument,            0,  'p'},
+    {"skip-invisibles",         no_argument,            0,  'i'},
+    {"skip-inappropriate",      no_argument,            0,  'x'},
+    {"negate-params",           no_argument,            0,  'n'},
+    {"version",                 no_argument,            0,  'o'},
     {"help",                    no_argument,            0,  'h'},
     {0,                         0,                      0,    0}
 };
@@ -93,6 +101,10 @@ static BOOL dirsOnly = NO;
 static BOOL filesOnly = NO;
 static BOOL exactMatchOnly = NO;
 static BOOL caseSensitive = NO;
+static BOOL skipPackages = NO;
+static BOOL skipInvisibles = NO;
+static BOOL skipInappropriate = NO;
+static BOOL negateParams = NO;
 
 #pragma mark -
 
@@ -124,7 +136,28 @@ int main (int argc, const char * argv[]) {
             case 's':
                 caseSensitive = YES;
                 break;
+              
+            case 'p':
+                skipPackages = YES;
+                break;
+            
+            case 'i':
+                skipInvisibles = YES;
+                break;
                 
+            case 'x':
+                skipInappropriate = YES;
+                break;
+            
+            case 'n':
+                negateParams = YES;
+                break;
+                
+            case 'o':
+                print_version();
+                exit(EX_OK);
+                break;
+            
             case 'h':
             default:
             {
@@ -245,6 +278,23 @@ catalogue_changed:
         search_options |= SRCHFS_MATCHPARTIALNAMES;
     }
     
+    if (skipPackages) {
+        search_options |= SRCHFS_SKIPPACKAGES;
+    }
+    
+    if (skipInvisibles) {
+        search_options |= SRCHFS_SKIPINVISIBLE;
+    }
+    
+    if (skipInappropriate) {
+        search_options |= SRCHFS_SKIPINAPPROPRIATE;
+    }
+    
+    if (negateParams) {
+        search_options |= SRCHFS_NEGATEPARAMS;
+    }
+
+    // Start searching
     do {
         err = searchfs(volpath, &search_blk, &matches, 0, search_options, &search_state);
         if (err == -1) {
@@ -411,4 +461,8 @@ static BOOL vol_supports_searchfs (NSString *path) {
 
 static void print_usage (void) {
     fprintf(stderr, "usage: searchfs [-dfeh] [-v mount_point] search_term\n");
+}
+
+static void print_version (void) {
+    printf("searchfs version %f\n", program_version);
 }

@@ -7,7 +7,7 @@
 
 <b>SYNOPSIS</b>
 
-     <b>searchfs</b> [<b>-dfeh</b>] [<b>-v</b> <u>mount</u><b>_<u></b>point</u>] <u>search</u><b>_<u></b>term</u>
+     <b>searchfs</b> [<b>-dfespixnh</b>] [<b>-v</b> <u>mount</u><b>_<u></b>point</u>] <u>search</u><b>_<u></b>term</u>
 
 <b>DESCRIPTION</b>
 
@@ -37,6 +37,29 @@
 
      <b>-s,</b> <b>--case-sensitive</b>
               Case sensitive matching.
+
+     <b>-p,</b> <b>--skip-packages</b>
+              Don't match file system objects that are inside a package. A
+              package is defined as a directory whose extension matches one of
+              the extensions that are configured into the kernel by Launch
+              Services.
+
+     <b>-i,</b> <b>--skip-invisibles</b>
+              Don't match invisible file system objects (that is, objects with
+              the Finder attribute &quot;Invisible&quot; set) or any objects within
+              invisible directories.
+
+     <b>-x,</b> <b>--skip-inappropriate</b>
+              Don't match any file system objects that are within an &quot;inappro-
+              priate&quot; directory.  Apple's current list of inappropriate direc-
+              tories contains one item: /System.
+
+     <b>-n,</b> <b>--negate-params</b>
+              List all file system objects that do *not* match the search cri-
+              teria.
+
+     <b>-o,</b> <b>--version</b>
+              Print program version and exit.
 
      <b>-h,</b> <b>--help</b>
               Print usage and exit.

@@ -111,6 +111,9 @@ static BOOL negateParams = NO;
 int main (int argc, const char * argv[]) {
     NSString *volumePath = DEFAULT_VOLUME;
     
+    // Line-buffered output
+    setvbuf(stdout, NULL, _IOLBF, BUFSIZ);
+    
     // Parse options
     int optch;
     int long_index = 0;
@@ -216,7 +219,7 @@ static void do_searchfs_search (const char *volpath, const char *match_string) {
     struct packed_attr_ref  info2;
     packed_result           result_buffer[MAX_MATCHES];
     
-catalogue_changed:
+catalog_changed:
     items_found = 0; // Set this here in case we're completely restarting
     search_blk.searchattrs.bitmapcount = ATTR_BIT_MAP_COUNT;
     search_blk.searchattrs.reserved = 0;
@@ -333,10 +336,10 @@ catalogue_changed:
             }
         }
         
-        // EBUSY indicates catalogue change; retry a few times.
+        // EBUSY indicates catalog change; retry a few times.
         if ((err == EBUSY) && (ebusy_count++ < MAX_EBUSY_RETRIES)) {
             //fprintf(stderr, "EBUSY, trying again");
-            goto catalogue_changed;
+            goto catalog_changed;
         }
         
         if (err != 0 && err != EAGAIN) {

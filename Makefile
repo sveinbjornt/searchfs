@@ -11,7 +11,7 @@ main: main.m
 	gcc $(FRAMEWORKS) -o $(BIN_NAME) $(CFLAGS) main.m
 	strip -x $(BIN_NAME)
 
-install: main
+install:
 	cp $(BIN_NAME) $(DEST_DIR)
 	cp $(MAN_NAME) $(MAN_DIR)
 

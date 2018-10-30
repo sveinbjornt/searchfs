@@ -22,7 +22,7 @@ printed to STDOUT, one path per line. Search is case-insensitive by default
 .Pp
 The following flags are supported:
 .Bl -tag -width -indent
-.It Fl v, -volume
+.It Fl v, -volume Ar path
 Specify volume to search. Default is the root file system at /.
 .It Fl d, -dirs-only
 Return only matching directories.
@@ -44,6 +44,8 @@ Don't match any file system objects that are within an "inappropriate" directory
 Apple's current list of inappropriate directories contains one item: /System.
 .It Fl n, -negate-params
 List all file system objects that do *not* match the search criteria.
+.It Fl l, --limit Ar number
+Exit when a certain number of matching items have been found.
 .It Fl o, -version
 Print program version and exit.
 .It Fl h, -help
@@ -57,7 +59,6 @@ Find directories with name matching 'something' on root volume:
 Find file with the exact name 'file.txt' on volume 'SomeHD':
 .Pp
 .Dl searchfs -v "/Volumes/SomeHD" -e "file.txt"
-.Pp
 .Sh SEE ALSO
 .Xr find 1 ,
 .Xr locate 1 ,

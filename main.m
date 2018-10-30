@@ -80,7 +80,7 @@ static void print_version (void);
 
 static const float program_version = 1.0f;
 
-static const char optstring[] = "v:dfespixnoh";
+static const char optstring[] = "v:dfespixnl:oh";
 
 static struct option long_options[] = {
     {"volume",                  required_argument,      0,  'v'},
@@ -92,6 +92,7 @@ static struct option long_options[] = {
     {"skip-invisibles",         no_argument,            0,  'i'},
     {"skip-inappropriate",      no_argument,            0,  'x'},
     {"negate-params",           no_argument,            0,  'n'},
+    {"limit",                   required_argument,      0,  'l'},
     {"version",                 no_argument,            0,  'o'},
     {"help",                    no_argument,            0,  'h'},
     {0,                         0,                      0,    0}
@@ -105,6 +106,7 @@ static BOOL skipPackages = NO;
 static BOOL skipInvisibles = NO;
 static BOOL skipInappropriate = NO;
 static BOOL negateParams = NO;
+static NSUInteger limit = 0;
 
 #pragma mark -
 
@@ -154,6 +156,10 @@ int main (int argc, const char * argv[]) {
             
             case 'n':
                 negateParams = YES;
+                break;
+            
+            case 'l':
+                limit = [@(optarg) integerValue];
                 break;
                 
             case 'o':
@@ -296,6 +302,8 @@ catalog_changed:
     if (negateParams) {
         search_options |= SRCHFS_NEGATEPARAMS;
     }
+    
+    unsigned int match_cnt = 0;
 
     // Start searching
     do {
@@ -324,6 +332,10 @@ catalog_changed:
                 if (size > -1) {
                     if (strlen(match_string) > 0 && !filter_result(path_buf, match_string)) {
                         fprintf(stdout, "%s\n", path_buf);
+                        match_cnt++;
+                        if (limit && match_cnt >= limit) {
+                            goto done;
+                        }
                     }
                 } else {
                     fprintf(stderr, "Unable to get path for object ID: %d\n", result_p->obj_id.fid_objno);
@@ -334,6 +346,7 @@ catalog_changed:
                     break;
                 }
             }
+            
         }
         
         // EBUSY indicates catalog change; retry a few times.
@@ -349,6 +362,9 @@ catalog_changed:
         search_options &= ~SRCHFS_START;
 
     } while (err == EAGAIN);
+    
+done:
+    return;
 }
 
 #pragma mark - post-processing

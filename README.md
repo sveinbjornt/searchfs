@@ -4,7 +4,7 @@
 
 `searchfs` is a Mac command line tool to quickly search by filename on entire HFS+ and APFS volumes. Searching takes place at the driver level using the file system catalog. This means the volume's directory tree can be scanned much faster than with a standard recursive filename search using `find`.  
 
-Search is case-insensitive by default. See the [man page](https://sveinbjorn.org/files/manpages/searchfs.1.html) for details.
+Search is case-insensitive by default. Matching files are printed to standard output in the order they are found in the catalog. See the [man page](https://sveinbjorn.org/files/manpages/searchfs.1.html) for details.
 
 ## Download
 
@@ -31,13 +31,13 @@ The following are benchmark results on a 2012 Retina MacBook Pro with an Apple-s
 $ time searchfs "something"
 0,01s user 33,15s system 32% cpu 1:33,59 total
 ```
-### /usr/bin/find
+### find
 ```shell
 $ time find / -name "*something*"
 9,53s user 67,64s system 49% cpu 2:37,39 total
 ```
 
-Although I have yet to test this properly, `searchfs` is probably *much* faster than `find` on hard disk drives, which have higher seek times.
+Although I have yet to test this properly, `searchfs` is probably *much* faster than `find` on hard disk drives, which have higher seek times. It is also very fast indeed on file systems with a small number of files.
 
 ## History
 
@@ -50,6 +50,10 @@ However, catalog search for both HFS+ and APFS remains available in Darwin's low
 ## TODO
 
 * The API supports searching the catalog for files based on creation, modification, access date, finder flags, deprecated old-school file and creator types,, and so on. Add that.
+
+## Version History
+
+* 14/07/2018 - **0.1.0** - Initial release
 
 ## BSD License
 

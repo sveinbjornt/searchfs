@@ -24,6 +24,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F481835222726F12002738AE /* CHANGES.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CHANGES.txt; sourceTree = "<group>"; };
 		F483552120C57C54006A6EC2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F483552520C586EF006A6EC2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F483552620C586EF006A6EC2 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
@@ -57,6 +58,7 @@
 			isa = PBXGroup;
 			children = (
 				F483552520C586EF006A6EC2 /* README.md */,
+				F481835222726F12002738AE /* CHANGES.txt */,
 				F483552620C586EF006A6EC2 /* LICENSE.txt */,
 				F483552A20C6A544006A6EC2 /* searchfs.1.html */,
 				F483552920C58700006A6EC2 /* searchfs.1 */,

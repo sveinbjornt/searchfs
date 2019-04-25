@@ -1,8 +1,6 @@
 
 TODO:
     * Create brew formula
-    * Fix issue running on older versions of macOS
-
 
 0.1 - 14/07/2018
 

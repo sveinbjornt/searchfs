@@ -3,7 +3,7 @@ MAN_NAME = searchfs.1
 CFLAGS = -Os
 DEST_DIR = /usr/local/bin/
 MAN_DIR = /usr/local/share/man/man1/
-FRAMEWORKS = -framework Foundation
+FRAMEWORKS = -framework Foundation -framework CoreServices
 
 all:: main
 

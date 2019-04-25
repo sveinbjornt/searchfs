@@ -71,6 +71,7 @@ typedef struct packed_result *packed_result_p;
 
 static void do_searchfs_search (const char *volpath, const char *match_string);
 static BOOL filter_result (const char *path, const char *match_string);
+BOOL has_fsgetpath (void);
 static ssize_t fsgetpath_compat (char * buf, size_t buflen, fsid_t * fsid, uint64_t obj_id);
 static ssize_t fsgetpath_legacy (char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id);
 static BOOL is_mount_path (NSString *path);
@@ -98,6 +99,8 @@ static struct option long_options[] = {
     {0,                         0,                      0,    0}
 };
 
+static BOOL fsgetpath_available = NO;
+
 static BOOL dirsOnly = NO;
 static BOOL filesOnly = NO;
 static BOOL exactMatchOnly = NO;
@@ -112,6 +115,9 @@ static NSUInteger limit = 0;
 
 int main (int argc, const char * argv[]) {
     NSString *volumePath = DEFAULT_VOLUME;
+    
+    // Check if running macOS 10.13 or later
+    fsgetpath_available = has_fsgetpath();
     
     // Line-buffered output
     setvbuf(stdout, NULL, _IOLBF, BUFSIZ);
@@ -334,7 +340,7 @@ catalog_changed:
                         fprintf(stdout, "%s\n", path_buf);
                         match_cnt++;
                         if (limit && match_cnt >= limit) {
-                            goto done;
+                            return;
                         }
                     }
                 } else {
@@ -387,16 +393,33 @@ BOOL filter_result (const char *path, const char *match_string) {
 
 #pragma mark - fsgetpath compatibility shim
 
+// Use deprecated Carbon API to get OS version.
+// This is the only reliable way on OS versions prior to 10.10
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+BOOL has_fsgetpath (void) {
+    SInt32 maj, min;
+    Gestalt(gestaltSystemVersionMajor, &maj);
+    Gestalt(gestaltSystemVersionMinor, &min);
+    
+    return (maj > 10 || (maj == 10 && min >= 13));
+}
+#pragma GCC diagnostic pop
+
 // fsgetpath was introduced in macOS 10.13.  To support older systems, we use a
 // compatibility shim that relies on the volfs support in older versions of the OS
 // See https://forums.developer.apple.com/thread/103162
 
 static ssize_t fsgetpath_compat (char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id) {
-    if (__builtin_available(macOS 10.13, *)) {
-        return fsgetpath(buf, buflen, fsid, obj_id);
-    } else {
-        return fsgetpath_legacy(buf, buflen, fsid, obj_id);
+    
+    if (fsgetpath_available) {
+        ssize_t size = fsgetpath(buf, buflen, fsid, obj_id);
+        if (size > -1) {
+            return size;
+        }
     }
+    
+    return fsgetpath_legacy(buf, buflen, fsid, obj_id);
 }
 
 static ssize_t fsgetpath_legacy (char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id) {

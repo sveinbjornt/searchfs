@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F481835422727619002738AE /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F481835322727619002738AE /* CoreServices.framework */; };
 		F483552220C57C54006A6EC2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F483552120C57C54006A6EC2 /* Foundation.framework */; };
 		F483552820C586FB006A6EC2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F483552720C586FB006A6EC2 /* main.m */; };
 /* End PBXBuildFile section */
@@ -25,6 +26,8 @@
 
 /* Begin PBXFileReference section */
 		F481835222726F12002738AE /* CHANGES.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CHANGES.txt; sourceTree = "<group>"; };
+		F481835322727619002738AE /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
+		F481835522727BC9002738AE /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		F483552120C57C54006A6EC2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F483552520C586EF006A6EC2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F483552620C586EF006A6EC2 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
@@ -39,6 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F481835422727619002738AE /* CoreServices.framework in Frameworks */,
 				F483552220C57C54006A6EC2 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -50,6 +54,7 @@
 			isa = PBXGroup;
 			children = (
 				F483552120C57C54006A6EC2 /* Foundation.framework */,
+				F481835322727619002738AE /* CoreServices.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -62,6 +67,7 @@
 				F483552620C586EF006A6EC2 /* LICENSE.txt */,
 				F483552A20C6A544006A6EC2 /* searchfs.1.html */,
 				F483552920C58700006A6EC2 /* searchfs.1 */,
+				F481835522727BC9002738AE /* Makefile */,
 				F483552720C586FB006A6EC2 /* main.m */,
 				F483552020C57C54006A6EC2 /* Frameworks */,
 				F4D2B39720C32F8400CD7371 /* Products */,
@@ -117,6 +123,7 @@
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = F4D2B38D20C32F8400CD7371;
 			productRefGroup = F4D2B39720C32F8400CD7371 /* Products */;
@@ -207,7 +214,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
@@ -261,7 +268,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.13;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CFLAGS = "";
 				SDKROOT = macosx;
@@ -275,7 +282,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5WX26Y89JP;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -287,7 +294,7 @@
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5WX26Y89JP;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};

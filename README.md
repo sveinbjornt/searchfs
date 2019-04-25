@@ -10,7 +10,7 @@ Search is case-insensitive by default. Matching files are printed to standard ou
 
 ## Download
 
-* [⇩ Download latest searchfs binary](https://sveinbjorn.org/files/software/searchfs.zip) (<20 KB, Intel 64-bit, macOS 10.8 or later)
+* [⇩ Download latest searchfs binary](https://sveinbjorn.org/files/software/searchfs.zip) (<20 KB, Intel 64-bit, macOS 10.7 or later)
 * [searchfs man page](https://sveinbjorn.org/files/manpages/searchfs.1.html) (HTML)
 
 ## Build & Install

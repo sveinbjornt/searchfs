@@ -344,7 +344,10 @@ catalog_changed:
                         }
                     }
                 } else {
-                    fprintf(stderr, "Unable to get path for object ID: %d\n", result_p->obj_id.fid_objno);
+                    // Getting path failed. This may be because the file system object
+                    // was deleted in the interval between being found and path lookup.
+                    // Fail silently.
+//                    fprintf(stderr, "Unable to get path for object ID: %d\n", result_p->obj_id.fid_objno);
                 }
                 
                 ptr = (ptr + result_p->size);

@@ -2,6 +2,13 @@
 TODO:
     * Create brew formula
 
+
+0.2 - 26/04/2019
+
+    * Fixed issue which prevented searchfs from working on older versions of macOS
+    * Now fails silently when path lookup fails for a file system object ID
+    * Now runs on macOS 10.7 or later
+
 0.1 - 14/07/2018
 
     * Initial release

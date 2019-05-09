@@ -1,6 +1,6 @@
 # searchfs
 
-<img src="http://sveinbjorn.org/images/executable_icon.jpg" width="128" height="128" alt="executable icon" style="float: right; margin-left: 20px; margin-bottom: 20px;" align="right">
+<img src="searchfs.png" width="164" height="164" alt="searchfs icon" style="float: right; margin-left: 20px; margin-bottom: 20px;" align="right">
 
 `searchfs` is a Mac command line tool to quickly search by filename on entire HFS+ and APFS volumes. Searching takes place at the driver level using the file system catalog. This means the volume's directory tree can be scanned much faster than with a standard recursive filename search using `find`.  
 
@@ -55,11 +55,19 @@ However, catalog search for both HFS+ and APFS remains available in Darwin's low
 
 ## Version History
 
-* 14/07/2018 - **0.1.0** - Initial release
+### 26/04/2019 - **0.2.0**
+
+* Fixed issue which prevented searchfs from working on older versions of macOS
+* Now fails silently when path lookup fails for a file system object ID
+* Now runs on macOS 10.7 or later
+
+### 14/07/2018 - **0.1.0**
+
+* Initial release
 
 ## BSD License
 
-Copyright © 2017-2018 Sveinbjorn Thordarson <a href="mailto:sveinbjorn@sveinbjorn.org">&lt;sveinbjorn@sveinbjorn.org&gt;</a>
+Copyright © 2017-2019 Sveinbjorn Thordarson <a href="mailto:sveinbjorn@sveinbjorn.org">&lt;sveinbjorn@sveinbjorn.org&gt;</a>
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 

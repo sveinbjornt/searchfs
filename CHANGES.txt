@@ -2,6 +2,9 @@
 TODO:
     * Create brew formula
 
+0.3
+    TODO: Search by date created, modified, file type, creator type
+    TODO: List all searchfs()-supported volumes
 
 0.2 - 26/04/2019
 

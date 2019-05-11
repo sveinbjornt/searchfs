@@ -2,7 +2,7 @@
 
 <img src="searchfs.png" width="164" height="164" alt="searchfs icon" style="float: right; margin-left: 20px; margin-bottom: 20px;" align="right">
 
-`searchfs` is a Mac command line tool to quickly search by filename on entire HFS+ and APFS volumes. Searching takes place at the driver level using the file system catalog. This means the volume's directory tree can be scanned much faster than with a standard recursive filename search using `find`.  
+`searchfs` is a Mac command line tool to quickly search by filename on entire HFS+ and APFS volumes. Searching takes place at the driver level using the file system catalog. This means the volume's directory tree can be scanned much faster than with a standard recursive filename search using `find`.
 
 Search is case-insensitive by default. Matching files are printed to standard output in the order they are found in the catalog. See the [man page](https://sveinbjorn.org/files/manpages/searchfs.1.html) for details.
 
@@ -10,7 +10,7 @@ Search is case-insensitive by default. Matching files are printed to standard ou
 
 ## Download
 
-* [⇩ Download latest searchfs binary](https://sveinbjorn.org/files/software/searchfs.zip) (<20 KB, Intel 64-bit, macOS 10.7 or later)
+* [⇩ Download latest searchfs binary](https://sveinbjorn.org/files/software/searchfs.zip) (v0.3, <20 KB, Intel 64-bit, macOS 10.7 or later)
 * [searchfs man page](https://sveinbjorn.org/files/manpages/searchfs.1.html) (HTML)
 
 ## Build & Install
@@ -51,17 +51,23 @@ However, catalog search for both HFS+ and APFS remains available in Darwin's low
 
 ## TODO
 
-* The API supports searching the catalog for files based on creation, modification, access date, finder flags, deprecated old-school file and creator types,, and so on. Add that.
+* The searchfs API supports searching the catalog for files based on creation, modification or access date, finder flags, deprecated old-school file and creator types, and so on. Add that.
 
 ## Version History
 
-### 26/04/2019 - **0.2.0**
+### 11/05/2019 - **0.3**
 
-* Fixed issue which prevented searchfs from working on older versions of macOS
-* Now fails silently when path lookup fails for a file system object ID
-* Now runs on macOS 10.7 or later
+* New -l flag lists all mounted volumes that support catalog search.
+* Volume to search can now be specified via device name as well as mount path.
+* Regex modifiers ^ and $ can now be used to match only at the start or end of a filenames.
 
-### 14/07/2018 - **0.1.0**
+### 26/04/2019 - **0.2**
+
+* Fixed issue which prevented searchfs from working on older versions of macOS.
+* Now fails silently when path lookup fails for a file system object ID.
+* Now runs on macOS 10.7 or later.
+
+### 14/07/2018 - **0.1**
 
 * Initial release
 

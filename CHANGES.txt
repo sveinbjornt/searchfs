@@ -1,10 +1,12 @@
 
 TODO:
     * Create brew formula
+    * Search by date created, modified, file type, creator type
 
 0.3
-    TODO: Search by date created, modified, file type, creator type
-    TODO: List all searchfs()-supported volumes
+    * New -l flag makes searchfs list all mounted volumes that support catalog search
+    * Volume to search can now be specified via device name (e.g. "/dev/disk1s1") as well as mount path
+    * Regex modifiers ^ and $ can now be used to match only at the start or end of a filenames, respectively.
 
 0.2 - 26/04/2019
 

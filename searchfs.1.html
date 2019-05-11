@@ -13,28 +13,32 @@
 
      <b>searchfs</b> searches for files by name on HFS+ and APFS volumes. Searching
      takes place at the driver level using the file system catalog via the
-     low-level searchfs() function. This means the volume's entire directory
-     tree can be scanned much faster than with a standard recursive directory
-     search using e.g. find.
+     low-level searchfs() kernel call. This means the volume's entire direc-
+     tory tree can be scanned much faster than with a standard recursive
+     directory search using /usr/bin/find.
 
-     Paths of files and directories with names containing the search term are
-     printed to STDOUT, one path per line. Search is case-insensitive by
-     default
+     The paths to all files and directories with names matching the search
+     term are printed to the standard output, one path per line. Search is
+     case-insensitive by default.
 
      The following flags are supported:
 
+     <b>-l,</b> <b>--list</b>
+              List all mounted filesystems that support catalog search.
+
      <b>-v,</b> <b>--volume</b> <u>path</u>
-              Specify volume to search (by mount point). Default is the root
-              file system at /.
+              Specify volume to search, either by mount path (e.g. &quot;/Vol-
+              umes/SomeVol&quot;) or device name (e.g. &quot;/dev/disk2s1&quot;). Default is
+              the root file system mounted at /.
 
      <b>-d,</b> <b>--dirs-only</b>
-              Return only matching directories.
+              Match directories only.
 
      <b>-f,</b> <b>--files-only</b>
-              Return only matching files.
+              Match files only.
 
      <b>-e,</b> <b>--exact-match</b>
-              Return only exact filename matches.
+              Exact filename matches only.
 
      <b>-s,</b> <b>--case-sensitive</b>
               Case sensitive matching.
@@ -56,11 +60,12 @@
               tories contains one item: /System.
 
      <b>-n,</b> <b>--negate-params</b>
-              List all file system objects that do *not* match the search cri-
+              Show all file system objects that do *not* match the search cri-
               teria.
 
-     <b>-l,</b> <b>---limit</b> <u>number</u>
-              Exit when a certain number of matching items have been found.
+     <b>-m,</b> <b>--limit</b> <u>number</u>
+              Terminate when the specified number of matching items has been
+              found.
 
      <b>-o,</b> <b>--version</b>
               Print program version and exit.
@@ -77,6 +82,17 @@
      Find file with the exact name 'file.txt' on volume 'SomeHD':
 
            searchfs -v /Volumes/SomeHD -e file.txt
+
+     The regular expression characters ^ and $ can be used to match only the
+     beginning or only the end of a string, thusly:
+
+     Find all filenames ending with suffix '.txt':
+
+           searchfs '.txt$'
+
+     Find all filenames starting with &quot;CHANGES&quot;:
+
+           searchfs ^CHANGES
 
 <b>SEE ALSO</b>
 

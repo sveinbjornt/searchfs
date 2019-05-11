@@ -10,7 +10,7 @@ all:: main
 
 main: main.m
 	$(CC) $(FRAMEWORKS) -o $(BIN_NAME) $(CFLAGS) main.m
-	strip -x $(BIN_NAME)
+	/usr/bin/strip -x $(BIN_NAME)
 
 install:
 	cp $(BIN_NAME) $(DEST_DIR)
@@ -21,4 +21,4 @@ uninstall:
 	rm $(MAN_DIR)$(MAN_NAME)
 
 clean:
-	rm -rf *.o searchfs 2> /dev/null
+	@rm -rf *.o searchfs 2> /dev/null

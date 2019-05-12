@@ -139,6 +139,7 @@ int main(int argc, const char * argv[]) {
             case 'l':
                 list_volumes();
                 exit(EX_OK);
+                break;
             
             case 'v':
                 volumePath = dev_to_mount_path([@(optarg) stringByResolvingSymlinksInPath]);
@@ -222,8 +223,8 @@ int main(int argc, const char * argv[]) {
     
     // Empty search string will match 0 results
     NSString *searchStr = @(argv[optind]);
-    if ([searchStr length] == 0) {
-        fprintf(stderr, "Error: Empty search string.\n");
+    if ([searchStr length] == 0 || [searchStr length] > PATH_MAX) {
+        fprintf(stderr, "Error: Invalid search string.\n");
         exit(EX_USAGE);
     }
 

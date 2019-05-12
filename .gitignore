@@ -12,7 +12,7 @@ searchfs.zip
 *.perspectivev3
 !default.perspectivev3
 xcuserdata
-searchfs.dSYM/
+*.dSYM/
 
 ## Other
 *.xccheckout

@@ -1,4 +1,4 @@
-.Dd Jun 7, 2019
+.Dd May 16, 2019
 .Dt SEARCHFS 1
 .Os Darwin
 .Sh NAME
@@ -6,14 +6,14 @@
 .Nd fast filename search on HFS+ and APFS volumes
 .Sh SYNOPSIS
 .Nm
-.Op Fl dfespixnoh
-.Op Fl v Ar mount_point
+.Op Fl ldfespixnmoh
+.Op Fl v Ar mount_point/device_namelist_volumes
 .Ar search_term
 .Sh DESCRIPTION
 .Nm
-searches for files by name on APFS and HFS+ volumes. Searching takes place at 
-the driver level using the file system catalog via the low-level searchfs() 
-kernel call. This means the volume's entire directory tree can be scanned much 
+searches for files by name on APFS and HFS+ volumes. Searching takes place at
+the driver level using the file system catalog via the low-level searchfs()
+kernel call. This means the volume's entire directory tree can be scanned much
 faster than with a standard recursive directory search using /usr/bin/find.
 .Pp
 The paths to all files and directories with names matching the search term are
@@ -47,7 +47,7 @@ Finder attribute "Invisible" set) or any objects within invisible directories.
 Don't match any file system objects that are within an "inappropriate" directory.
 Apple's current list of inappropriate directories contains one item: /System.
 .It Fl n, -negate-params
-Show all file system objects that do *not* match the search criteria.
+Show all file system objects that do *not* match the search term.
 .It Fl m, -limit Ar number
 Terminate when the specified number of matching items has been found.
 .It Fl o, -version
@@ -65,16 +65,15 @@ Find file with the exact name 'file.txt' on volume 'SomeHD':
 .Dl searchfs -v "/Volumes/SomeHD" -e "file.txt"
 .Pp
 The regular expression characters ^ and $ can be used to match only the
-beginning or only the end of a string, thusly:
-
-Find all filenames ending with suffix '.txt':
+beginning or only the end of a string, respectively.
+.Pp
+For example, find all filenames ending with the suffix '.txt':
 .Pp
 .Dl searchfs '.txt$'
 .Pp
 Find all filenames starting with "CHANGES":
 .Pp
 .Dl searchfs "^CHANGES"
-.Pp
 .Sh SEE ALSO
 .Xr find 1 ,
 .Xr locate 1 ,

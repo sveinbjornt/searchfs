@@ -216,7 +216,6 @@ int main(int argc, const char * argv[]) {
     }
     
     if (optind >= argc) {
-        fprintf(stderr, "Missing argument.\n");
         print_usage();
         exit(EX_USAGE);
     }
@@ -619,9 +618,9 @@ static void list_volumes(void) {
 #pragma mark -
 
 static void print_usage(void) {
-    fprintf(stderr, "usage: searchfs [-dfeh] [-v mount_point] search_term\n");
+    fprintf(stderr, "usage: searchfs [-ldfespixnmoh] [-v mount_point] search_term\n");
 }
 
 static void print_version(void) {
-    printf("searchfs version %f\n", program_version);
+    printf("searchfs version %.2f\n", program_version);
 }

@@ -2,7 +2,7 @@
 
 <img src="searchfs.png" width="164" height="164" alt="searchfs icon" style="float: right; margin-left: 20px; margin-bottom: 20px;" align="right">
 
-`searchfs` is a Mac command line tool to quickly search by filename on entire HFS+ and APFS volumes. Searching takes place at the driver level using the file system catalog. This means the volume's directory tree can be scanned much faster than with a standard recursive filename search using `find`.
+`searchfs` is a Mac command line tool to quickly search by filename on entire APFS and HFS+ volumes. Searching takes place at the driver level using the file system catalog. This means the volume's directory tree can be scanned much faster than with a standard recursive filename search using `find`.
 
 Search is case-insensitive by default. Matching files are printed to standard output in the order they are found in the catalog. See the [man page](https://sveinbjorn.org/files/manpages/searchfs.1.html) for details.
 
@@ -20,7 +20,7 @@ Search is case-insensitive by default. Matching files are printed to standard ou
 * `make`
 * `make install`
 
-Installs binary into <code>/usr/local/bin/</code>. Man page goes into <code>/usr/local/share/man/man1/</code>.
+Installs binary into `/usr/local/bin/`. Man page goes into `/usr/local/share/man/man1/`.
 
 ## Performance
 
@@ -47,7 +47,7 @@ Apple added file system catalog search to Mac OS with the introduction of the Hi
 
 The Classic Mac OS exposed this functionality via the FSCatalogSearch() function, which iterated efficiently over the nodes, thus minimizing disk seek times. In the pre-SSD era, this gave the Mac a significant performance advantage over Windows when it came to full-volume search. For a long time, FSCatalogSearch continued to be available in Mac OS X / macOS via the Carbon APIs but it has now been deprecated and does not support APFS, Apple's new file system.
 
-However, catalog search for both HFS+ and APFS remains available in Darwin's low-level system libraries via the [searchfs()](https://www.unix.com/man-page/osx/2/searchfs/) function. The `searchfs` program makes use of this function.
+However, catalog search for both HFS+ and APFS is available in Darwin's low-level system libraries via the [searchfs()](https://www.unix.com/man-page/osx/2/searchfs/) function. The `searchfs` program makes use of this function.
 
 ## TODO
 

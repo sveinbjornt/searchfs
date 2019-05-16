@@ -380,7 +380,7 @@ catalog_changed:
                     // Getting path failed. This may be because the file system object
                     // was deleted in the interval between being found and path lookup.
                     // Fail silently.
-                    fprintf(stderr, "Unable to get path for object ID: %d\n", result_p->obj_id.fid_objno);
+//                    fprintf(stderr, "Unable to get path for object ID: %d\n", result_p->obj_id.fid_objno);
                 }
                 
                 ptr = (ptr + result_p->size);
@@ -578,7 +578,7 @@ static BOOL vol_supports_searchfs(NSString *path) {
     int err = getattrlist(p, &attrList, &attrBuf, sizeof(attrBuf), 0);
     if (err != 0) {
         err = errno;
-        fprintf(stderr, "Error %d getting attrs for volume %s", err, p);
+        fprintf(stderr, "Error %d getting attrs for volume %s\n", err, p);
         return NO;
     }
     

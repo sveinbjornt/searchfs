@@ -80,6 +80,11 @@ def run_tests():
     lines = run_searchfs("-pse Contents")
     assert "/Applications/Calendar.app/Contents" not in lines
 
+    # Skip /System folder
+    lines = run_searchfs("-xse Frameworks")
+    assert len(lines) > 10
+    assert len([n for n in lines if n.startswith("/System")]) == 0
+
     # All done
     elapsed = time.time() - start
     print("Tests completed in %.1f seconds" % (elapsed,))

@@ -46,6 +46,7 @@
 #include <sys/fsgetpath.h>
 #include <sys/mount.h>
 
+
 struct packed_name_attr {
     u_int32_t               size;           // Of the remaining fields
     struct attrreference    ref;            // Offset/length of name itself
@@ -71,6 +72,7 @@ typedef struct packed_result *packed_result_p;
 #define DEFAULT_VOLUME      @"/"
 
 
+// Prototypes
 static void do_searchfs_search(const char *volpath, const char *match_string);
 static BOOL filter_result(const char *path, const char *match_string);
 static BOOL has_fsgetpath(void);
@@ -119,9 +121,10 @@ static NSUInteger limit = 0;
 static BOOL startMatchOnly = NO;
 static BOOL endMatchOnly = NO;
 
+
 #pragma mark -
 
-int main(int argc, const char * argv[]) {
+int main(int argc, const char *argv[]) {
     NSString *volumePath = DEFAULT_VOLUME;
     
     // Check if running macOS 10.13 or later
@@ -220,13 +223,14 @@ int main(int argc, const char * argv[]) {
         exit(EX_USAGE);
     }
     
-    // Empty search string will match 0 results
     NSString *searchStr = @(argv[optind]);
-    if ([searchStr length] == 0 || [searchStr length] > PATH_MAX) {
-        fprintf(stderr, "Error: Invalid search string.\n");
-        exit(EX_USAGE);
-    }
-
+    
+    // Empty search string will match 0 results
+//    if ([searchStr length] == 0 || [searchStr length] > PATH_MAX) {
+//        fprintf(stderr, "Error: Invalid search string.\n");
+//        exit(EX_USAGE);
+//    }
+    
     // Parse ^ and $ modifiers
     if ([searchStr hasPrefix:@"^"]) {
         startMatchOnly = YES;
@@ -449,7 +453,7 @@ BOOL filter_result(const char *path, const char *match_string) {
 // This is the only reliable way on OS versions prior to 10.10
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-static BOOL has_fsgetpath (void) {
+static BOOL has_fsgetpath(void) {
     SInt32 maj, min;
     Gestalt(gestaltSystemVersionMajor, &maj);
     Gestalt(gestaltSystemVersionMinor, &min);

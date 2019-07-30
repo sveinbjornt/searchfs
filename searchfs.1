@@ -73,7 +73,11 @@ For example, find all filenames ending with the suffix '.txt':
 .Pp
 Find all filenames starting with "CHANGES":
 .Pp
-.Dl searchfs "^CHANGES"
+.Dl searchfs -s "^CHANGES"
+.Pp
+Find *all* files on the root filesystem:
+.Pp
+.Dl searchfs *
 .Sh SEE ALSO
 .Xr find 1 ,
 .Xr locate 1 ,

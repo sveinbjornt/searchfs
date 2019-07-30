@@ -6,7 +6,7 @@
 
 Search is case-insensitive by default. Matching files are printed to standard output in the order they are found in the catalog. See the [man page](https://sveinbjorn.org/files/manpages/searchfs.1.html) for details.
 
-[KatSearch](https://github.com/sveinbjornt/KatSearch) is a graphical application built on top of `searchfs`.
+[KatSearch](https://github.com/sveinbjornt/KatSearch) is a native graphical macOS application built on top of `searchfs`.
 
 ## Download
 

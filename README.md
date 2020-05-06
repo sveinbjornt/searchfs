@@ -51,6 +51,7 @@ However, catalog search for both HFS+ and APFS is available in Darwin's low-leve
 
 ## TODO
 
+* Add support for macOS 10.15 Catalina
 * The searchfs API supports searching the catalog for files based on size, owner, group, creation, modification or access date, finder flags, deprecated old-school file and creator types, and so on. Add that.
 
 ## Version History
@@ -73,7 +74,7 @@ However, catalog search for both HFS+ and APFS is available in Darwin's low-leve
 
 ## BSD License
 
-Copyright © 2017-2019 Sveinbjorn Thordarson <a href="mailto:sveinbjorn@sveinbjorn.org">&lt;sveinbjorn@sveinbjorn.org&gt;</a>
+Copyright © 2017-2020 Sveinbjorn Thordarson <a href="mailto:sveinbjorn@sveinbjorn.org">&lt;sveinbjorn@sveinbjorn.org&gt;</a>
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 

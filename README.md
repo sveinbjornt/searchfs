@@ -2,7 +2,7 @@
 
 <img src="searchfs.png" width="164" height="164" alt="searchfs icon" style="float: right; margin-left: 20px; margin-bottom: 20px;" align="right">
 
-`searchfs` is a Mac command line tool to quickly search by filename on entire APFS and HFS+ volumes. Searching takes place at the driver level using the file system catalog. This means the volume's directory tree can be scanned much faster than with a standard recursive filename search using `find`.
+`searchfs` is a macOS command line tool to quickly search by filename on entire APFS and HFS+ volumes. Searching takes place at the driver level using the file system catalog. This means the volume's directory tree can be scanned much faster than with a standard recursive filename search using `find`.
 
 Search is case-insensitive by default. Matching files are printed to standard output in the order they are found in the catalog. See the [man page](https://sveinbjorn.org/files/manpages/searchfs.1.html) for details.
 

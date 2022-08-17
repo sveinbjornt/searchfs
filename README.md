@@ -1,3 +1,6 @@
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![Language](https://img.shields.io/badge/language-objective--c-lightgrey)]()
+
 # searchfs
 
 <img src="searchfs.png" width="164" height="164" alt="searchfs icon" style="float: right; margin-left: 20px; margin-bottom: 20px;" align="right">

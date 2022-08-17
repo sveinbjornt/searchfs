@@ -23,6 +23,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		F40BC84628AD25AA00D59071 /* macos.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = macos.yml; path = .github/workflows/macos.yml; sourceTree = "<group>"; };
 		F442A0502284E05F0082840B /* searchfs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = searchfs.png; sourceTree = "<group>"; };
 		F46426FA246379FC00288C59 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F46426FB246379FC00288C59 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
@@ -83,6 +84,7 @@
 		F4D2B38D20C32F8400CD7371 = {
 			isa = PBXGroup;
 			children = (
+				F40BC84628AD25AA00D59071 /* macos.yml */,
 				F481835522727BC9002738AE /* Makefile */,
 				F483552720C586FB006A6EC2 /* main.m */,
 				F46426FD24637A5C00288C59 /* Documentation */,

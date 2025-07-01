@@ -218,10 +218,10 @@ int main(int argc, const char *argv[]) {
     NSString *searchStr = @(argv[optind]);
     
     // Empty search string will match 0 results
-//    if ([searchStr length] == 0 || [searchStr length] > PATH_MAX) {
-//        fprintf(stderr, "Error: Invalid search string.\n");
-//        exit(EX_USAGE);
-//    }
+    if ([searchStr length] == 0 || [searchStr length] > PATH_MAX) {
+        fprintf(stderr, "Error: Empty or invalid search string.\n");
+        exit(EX_USAGE);
+    }
     
     // Parse ^ and $ modifiers
     if ([searchStr hasPrefix:@"^"]) {
@@ -479,6 +479,7 @@ static NSString *dev_to_mount_path(NSString *devPath) {
 }
 
 static BOOL is_mount_path(NSString *path) {
+    // This is a placeholder for future functionality.
     return YES;
 //    NSArray *mountPaths = [[NSFileManager defaultManager] mountedVolumeURLsIncludingResourceValuesForKeys:nil options:0];
 //    for (NSURL *mountPathURL in mountPaths) {

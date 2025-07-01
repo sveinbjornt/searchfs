@@ -11,24 +11,34 @@ import subprocess
 
 SEARCHFS = "./searchfs"
 
+# Exit codes from sysexits.h
+EX_USAGE = 64
 
 def run_tests():
     print("Running tests... (this may take a while)")
     start = time.time()
 
-    def run_searchfs(args_list):
+    def run_searchfs(args_list, expected_exit_code=0):
         cmd_to_run = [SEARCHFS] + args_list
         print(" ".join(cmd_to_run))
         try:
-            # Use subprocess.run for better control and Python 3 compatibility
-            result = subprocess.run(cmd_to_run, capture_output=True, text=True, check=True)
+            result = subprocess.run(cmd_to_run, capture_output=True, text=True, check=False)
             out = result.stdout
+            err = result.stderr
+
+            if result.returncode != expected_exit_code:
+                raise AssertionError(
+                    f"Command '{' '.join(cmd_to_run)}' exited with {result.returncode}, expected {expected_exit_code}.\n" +
+                    f"Stdout: {out}\n" +
+                    f"Stderr: {err}"
+                )
+            
             return out.strip().split("\n")
-        except subprocess.CalledProcessError as e:
-            print(f"Error running command: {e.cmd}", file=sys.stderr)
-            print(f"Stdout: {e.stdout}", file=sys.stderr)
-            print(f"Stderr: {e.stderr}", file=sys.stderr)
-            raise # Re-raise the exception after printing debug info
+        except FileNotFoundError:
+            raise AssertionError(f"Binary not found: {SEARCHFS}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}", file=sys.stderr)
+            raise
 
     # Test volume listing
     lines = run_searchfs(["--list"])
@@ -92,6 +102,9 @@ def run_tests():
     lines = run_searchfs(["-xse", "Frameworks"])
     assert len(lines) > 0
     assert len([n for n in lines if n.startswith("/System")]) == 0
+
+    # Test empty search string (should exit with EX_USAGE)
+    run_searchfs([""], expected_exit_code=EX_USAGE)
 
     # All done
     elapsed = time.time() - start

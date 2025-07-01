@@ -1,6 +1,7 @@
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![Language](https://img.shields.io/badge/language-objective--c-lightgrey)]()
-[![Build](https://github.com/sveinbjornt/searchfs/actions/workflows/macos.yml/badge.svg)]()
+[![Language](https://img.shields.io/badge/language-objective--c-lightgrey)](https://en.wikipedia.org/wiki/Objective-C)
+[![Release](https://shields.io/github/v/release/sveinbjornt/searchfs?display_name=tag)](https://github.com/sveinbjornt/searchfs/releases)
+[![Build](https://github.com/sveinbjornt/searchfs/actions/workflows/macos.yml/badge.svg)](https://github.com/sveinbjornt/searchfs/actions)
 
 # searchfs
 
@@ -14,7 +15,7 @@ Search is case-insensitive by default. Matching files are printed to standard ou
 
 ## Download
 
-* [⇩ Download latest searchfs binary](https://sveinbjorn.org/files/software/searchfs.zip) (v0.3, <20 KB, Intel 64-bit, macOS 10.7 or later)
+* [⬇ Download latest searchfs binary](https://sveinbjorn.org/files/software/searchfs.zip) (v0.4, <20 KB, Intel 64-bit, macOS 11.0 or later)
 * [searchfs man page](https://sveinbjorn.org/files/manpages/searchfs.1.html) (HTML)
 
 ## Build & Install
@@ -55,10 +56,14 @@ However, catalog search for both HFS+ and APFS is available in Darwin's low-leve
 
 ## TODO
 
-* Add support for macOS 10.15 Catalina
 * The searchfs API supports searching the catalog for files based on size, owner, group, creation, modification or access date, finder flags, deprecated old-school file and creator types, and so on. Add that.
 
 ## Version History
+
+### 30/06/2025 - **0.4**
+
+*   Bumped minimum macOS version to 11.0 (Big Sur).
+*   Removed fsgetpath compatibility shim.
 
 ### 11/05/2019 - **0.3**
 
@@ -78,7 +83,7 @@ However, catalog search for both HFS+ and APFS is available in Darwin's low-leve
 
 ## BSD License
 
-Copyright © 2017-2020 Sveinbjorn Thordarson <a href="mailto:sveinbjorn@sveinbjorn.org">&lt;sveinbjorn@sveinbjorn.org&gt;</a>
+Copyright © 2017-2025 Sveinbjorn Thordarson <a href="mailto:sveinbjorn@sveinbjorn.org">&lt;sveinbjorn@sveinbjorn.org&gt;</a>
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 

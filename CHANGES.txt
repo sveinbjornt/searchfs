@@ -4,6 +4,9 @@ TODO:
     * Search by date created, modified, file type, creator type
     * Search all volumes by passing "*" or "all" to -v flag
 
+0.4
+    * Now requires macOS 11+
+
 0.3
     * New -l flag makes searchfs list all mounted volumes that support catalog search
     * Volume to search can now be specified via device name (e.g. "/dev/disk1s1") as well as mount path

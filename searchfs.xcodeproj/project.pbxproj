@@ -3,24 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		F483552820C586FB006A6EC2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F483552720C586FB006A6EC2 /* main.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		F4D2B39420C32F8400CD7371 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 12;
-			dstPath = /usr/share/man/man1;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		F40BC84628AD25AA00D59071 /* macos.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = macos.yml; path = .github/workflows/macos.yml; sourceTree = "<group>"; };
@@ -111,8 +99,7 @@
 			buildPhases = (
 				F4D2B39220C32F8400CD7371 /* Sources */,
 				F4D2B39320C32F8400CD7371 /* Frameworks */,
-				F4D2B39420C32F8400CD7371 /* CopyFiles */,
-				F483552B20C6A850006A6EC2 /* ShellScript */,
+				F483552B20C6A850006A6EC2 /* Create Man Page HTML */,
 			);
 			buildRules = (
 			);
@@ -129,7 +116,8 @@
 		F4D2B38E20C32F8400CD7371 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1140;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1640;
 				ORGANIZATIONNAME = "Sveinbjorn Thordarson";
 				TargetAttributes = {
 					F4D2B39520C32F8400CD7371 = {
@@ -156,18 +144,20 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		F483552B20C6A850006A6EC2 /* ShellScript */ = {
+		F483552B20C6A850006A6EC2 /* Create Man Page HTML */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Create Man Page HTML";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/bin/nroff -mandoc searchfs.1 | ./cat2html > searchfs.1.html\n\n    ";
+			shellScript = "/usr/bin/nroff -mandoc searchfs.1 | ./cat2html > searchfs.1.html\n\n    \n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -209,6 +199,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -220,8 +211,10 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEPLOYMENT_POSTPROCESSING = YES;
+				DEVELOPMENT_TEAM = 5WX26Y89JP;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -236,7 +229,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
@@ -272,6 +265,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -283,8 +277,10 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = YES;
+				DEVELOPMENT_TEAM = 5WX26Y89JP;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -293,7 +289,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CFLAGS = "";
 				SDKROOT = macosx;
@@ -307,9 +303,8 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5WX26Y89JP;
 				ENABLE_HARDENED_RUNTIME = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -320,9 +315,8 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5WX26Y89JP;
 				ENABLE_HARDENED_RUNTIME = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};

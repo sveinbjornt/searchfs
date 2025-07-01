@@ -75,9 +75,6 @@ typedef struct packed_result *packed_result_p;
 // Prototypes
 static void do_searchfs_search(const char *volpath, const char *match_string);
 static BOOL filter_result(const char *path, const char *match_string);
-static BOOL has_fsgetpath(void);
-static ssize_t fsgetpath_compat(char * buf, size_t buflen, fsid_t * fsid, uint64_t obj_id);
-static ssize_t fsgetpath_legacy(char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id);
 static NSString *dev_to_mount_path(NSString *devPath);
 static BOOL is_mount_path(NSString *path);
 static BOOL vol_supports_searchfs(NSString *path);
@@ -86,7 +83,7 @@ static void print_usage(void);
 static void print_version(void);
 
 
-static const float program_version = 0.3f;
+static const float program_version = 0.4f;
 
 static const char optstring[] = "v:dfespixnm:loh";
 
@@ -107,8 +104,6 @@ static struct option long_options[] = {
     {0,                         0,                      0,    0}
 };
 
-static BOOL fsgetpathAvailable = NO;
-
 static BOOL dirsOnly = NO;
 static BOOL filesOnly = NO;
 static BOOL exactMatchOnly = NO;
@@ -126,9 +121,6 @@ static BOOL endMatchOnly = NO;
 
 int main(int argc, const char *argv[]) {
     NSString *volumePath = DEFAULT_VOLUME;
-    
-    // Check if running macOS 10.13 or later
-    fsgetpathAvailable = has_fsgetpath();
     
     // Line-buffered output
     setvbuf(stdout, NULL, _IOLBF, BUFSIZ);
@@ -366,11 +358,11 @@ catalog_changed:
                 
                 // Call private SPI fsgetpath to get path string for file system object ID
                 char path_buf[PATH_MAX];
-                ssize_t size = fsgetpath_compat((char *)&path_buf,
-                                                sizeof(path_buf),
-                                                &result_p->fs_id,
-                                                (uint64_t)result_p->obj_id.fid_objno |
-                                                ((uint64_t)result_p->obj_id.fid_generation << 32));
+                ssize_t size = fsgetpath((char *)&path_buf,
+                                         sizeof(path_buf),
+                                         &result_p->fs_id,
+                                         (uint64_t)result_p->obj_id.fid_objno |
+                                         ((uint64_t)result_p->obj_id.fid_generation << 32));
                 if (size > -1) {
                     if (strlen(match_string) > 0 && !filter_result(path_buf, match_string)) {
                         fprintf(stdout, "%s\n", path_buf);
@@ -447,70 +439,6 @@ BOOL filter_result(const char *path, const char *match_string) {
     return NO;
 }
 
-#pragma mark - fsgetpath compatibility shim
-
-// Use deprecated Carbon API to get OS version.
-// This is the only reliable way on OS versions prior to 10.10
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-static BOOL has_fsgetpath(void) {
-    SInt32 maj, min;
-    Gestalt(gestaltSystemVersionMajor, &maj);
-    Gestalt(gestaltSystemVersionMinor, &min);
-    
-    return (maj > 10 || (maj == 10 && min >= 13));
-}
-#pragma GCC diagnostic pop
-
-// fsgetpath was introduced in macOS 10.13.  To support older systems, we use a
-// compatibility shim that relies on the volfs support in older versions of the OS
-// See https://forums.developer.apple.com/thread/103162
-
-static ssize_t fsgetpath_compat(char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wpartial-availability"
-    if (fsgetpathAvailable) {
-        ssize_t size = fsgetpath(buf, buflen, fsid, obj_id);
-        if (size > -1) {
-            return size;
-        }
-    }
-#pragma clang diagnastic pop
-    
-    return fsgetpath_legacy(buf, buflen, fsid, obj_id);
-}
-
-static ssize_t fsgetpath_legacy(char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id) {
-    char volfsPath[64];  // 8 for `/.vol//\0`, 10 for `fsid->val[0]`, 20 for `obj_id`, rounded up for paranoia
-    
-    snprintf(volfsPath, sizeof(volfsPath), "/.vol/%ld/%llu", (long)fsid->val[0], (unsigned long long)obj_id);
-    
-    struct {
-        uint32_t            length;
-        attrreference_t     pathRef;
-        char                buffer[MAXPATHLEN];
-    } __attribute__((aligned(4), packed)) attrBuf;
-    
-    struct attrlist attrList;
-    memset(&attrList, 0, sizeof(attrList));
-    attrList.bitmapcount = ATTR_BIT_MAP_COUNT;
-    attrList.commonattr = ATTR_CMN_FULLPATH;
-    
-    int success = getattrlist(volfsPath, &attrList, &attrBuf, sizeof(attrBuf), 0) == 0;
-    if (!success) {
-        return -1;
-    }
-    
-    if (attrBuf.pathRef.attr_length > buflen) {
-        errno = ENOSPC;
-        return -1;
-    }
-    
-    strlcpy(buf, ((const char *)&attrBuf.pathRef) + attrBuf.pathRef.attr_dataoffset, buflen);
-    
-    return attrBuf.pathRef.attr_length;
-}
-
 #pragma mark - util
 
 static NSString *dev_to_mount_path(NSString *devPath) {
@@ -551,14 +479,15 @@ static NSString *dev_to_mount_path(NSString *devPath) {
 }
 
 static BOOL is_mount_path(NSString *path) {
-    NSArray *mountPaths = [[NSFileManager defaultManager] mountedVolumeURLsIncludingResourceValuesForKeys:nil options:0];
-    for (NSURL *mountPathURL in mountPaths) {
-        if ([path isEqualToString:[mountPathURL path]]) {
-            return YES;
-        }
-    }
-    
-    return NO;
+    return YES;
+//    NSArray *mountPaths = [[NSFileManager defaultManager] mountedVolumeURLsIncludingResourceValuesForKeys:nil options:0];
+//    for (NSURL *mountPathURL in mountPaths) {
+//        if ([path isEqualToString:[mountPathURL path]]) {
+//            return YES;
+//        }
+//    }
+//    
+//    return NO;
 }
 
 static BOOL vol_supports_searchfs(NSString *path) {

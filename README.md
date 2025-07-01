@@ -20,12 +20,14 @@ Search is case-insensitive by default. Matching files are printed to standard ou
 
 ## Build & Install
 
-* `git clone https://github.com/sveinbjornt/searchfs.git`
-* `cd searchfs`
-* `make`
-* `make install`
+```bash
+git clone https://github.com/sveinbjornt/searchfs.git
+cd searchfs
+make
+make install
+```
 
-Installs binary into `/usr/local/bin/`. Man page goes into `/usr/local/share/man/man1/`.
+Installs binary by default into `/usr/local/bin/`. Man page goes into `/usr/local/share/man/man1/`. These can be overridden with `DEST_DIR` and `MAND_DIR`.
 
 ## Performance
 
@@ -34,12 +36,15 @@ According to my benchmarks, `searchfs` runs about 35-50% faster than `find` on A
 The following are benchmark results on a 2012 Retina MacBook Pro with an Apple-supplied 512 GB SSD running an APFS file system containing about 2 million files:
 
 ### searchfs
-```shell
+
+```bash
 $ time searchfs "something"
 0,01s user 33,15s system 32% cpu 1:23,59 total
 ```
+
 ### find
-```shell
+
+```bash
 $ time find / -name "*something*"
 9,53s user 67,64s system 49% cpu 2:37,39 total
 ```
@@ -54,6 +59,14 @@ The Classic Mac OS exposed this functionality via the FSCatalogSearch() function
 
 However, catalog search for both HFS+ and APFS is available in Darwin's low-level system libraries via the [searchfs()](https://www.unix.com/man-page/osx/2/searchfs/) function. The `searchfs` program makes use of this function.
 
+## Testing
+
+You'll need Python 3 installed.
+
+```bash
+python3 test.py
+```
+
 ## TODO
 
 * The searchfs API supports searching the catalog for files based on size, owner, group, creation, modification or access date, finder flags, deprecated old-school file and creator types, and so on. Add that.
@@ -63,7 +76,7 @@ However, catalog search for both HFS+ and APFS is available in Darwin's low-leve
 ### 30/06/2025 - **0.4**
 
 *   Bumped minimum macOS version to 11.0 (Big Sur).
-*   Removed fsgetpath compatibility shim.
+*   Removed fsgetpath compatibility shim and modernized code.
 
 ### 11/05/2019 - **0.3**
 

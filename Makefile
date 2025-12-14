@@ -1,3 +1,5 @@
+# Makefile for searchfs command line tool
+
 BIN_NAME = searchfs
 MAN_NAME = searchfs.1
 CC=clang
@@ -9,16 +11,16 @@ FRAMEWORKS = -framework Foundation -framework CoreServices
 all:: main
 
 main: main.m
-	$(CC) $(FRAMEWORKS) -o $(BIN_NAME) $(CFLAGS) main.m
-	/usr/bin/strip -x $(BIN_NAME)
+	$(CC) $(FRAMEWORKS) -o "$(BIN_NAME)" $(CFLAGS) main.m
+	/usr/bin/strip -xS "$(BIN_NAME)"
 
 install:
-	cp $(BIN_NAME) $(DEST_DIR)
-	cp $(MAN_NAME) $(MAN_DIR)
+	cp "$(BIN_NAME)" "$(DEST_DIR)"
+	cp "$(MAN_NAME)" "$(MAN_DIR)"
 
 uninstall:
-	rm $(DEST_DIR)$(BIN_NAME)
-	rm $(MAN_DIR)$(MAN_NAME)
+	rm "$(DEST_DIR)$(BIN_NAME)"
+	rm "$(MAN_DIR)$(MAN_NAME)"
 
 clean:
-	@rm -rf *.o searchfs 2> /dev/null
+	rm -rf *.o searchfs 2> /dev/null

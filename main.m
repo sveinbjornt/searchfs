@@ -121,6 +121,9 @@ static BOOL endMatchOnly = NO;
 
 int main(int argc, const char *argv[]) {
     NSString *volumePath = DEFAULT_VOLUME;
+
+
+
     
     // Line-buffered output
     setvbuf(stdout, NULL, _IOLBF, BUFSIZ);
@@ -246,6 +249,8 @@ int main(int argc, const char *argv[]) {
 #pragma mark - search
 
 static void do_searchfs_search(const char *volpath, const char *match_string) {
+    fprintf(stderr, "DEBUG: Entering do_searchfs_search\n");
+    fflush(stderr);
     // See "man 2 searchfs" for further details
     int                     err = 0;
     int                     items_found = 0;
@@ -341,10 +346,12 @@ catalog_changed:
 
     // Start searching
     do {
+        NSLog(@"DEBUG: searchfs() call - volpath: %s, search_options: %u", volpath, search_options);
         err = searchfs(volpath, &search_blk, &matches, 0, search_options, &search_state);
         if (err == -1) {
             err = errno;
         }
+        NSLog(@"DEBUG: searchfs() returned err: %d, matches: %lu", err, matches);
         
         if ((err == 0 || err == EAGAIN) && matches > 0) {
             
@@ -404,12 +411,21 @@ catalog_changed:
 #pragma mark - post-processing
 
 BOOL filter_result(const char *path, const char *match_string) {
-    if (!caseSensitive && !startMatchOnly && !endMatchOnly) {
-        return NO;
-    }
-    
     NSString *pathStr = @(path);
     NSString *matchStr = @(match_string);
+
+    // If no specific filtering options are set, perform a case-insensitive substring match.
+    if (!caseSensitive && !startMatchOnly && !endMatchOnly) {
+        // Debugging: Print pathStr and matchStr
+        NSLog(@"DEBUG: filter_result - pathStr: %@, matchStr: %@", pathStr, matchStr);
+        if ([pathStr localizedCaseInsensitiveContainsString:matchStr]) {
+            NSLog(@"DEBUG: filter_result - Match found, returning NO.");
+            return NO; // Match found, don't filter out
+        } else {
+            NSLog(@"DEBUG: filter_result - No match, returning YES.");
+            return YES; // No match, filter out
+        }
+    }
     
     if (caseSensitive) {
         NSString *escMatch = [NSRegularExpression escapedTemplateForString:matchStr];

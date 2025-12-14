@@ -12,6 +12,7 @@
 
 /* Begin PBXFileReference section */
 		F40BC84628AD25AA00D59071 /* macos.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = macos.yml; path = .github/workflows/macos.yml; sourceTree = "<group>"; };
+		F40FE9D42EEF4224000AA4FA /* man2html.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = man2html.sh; sourceTree = "<group>"; };
 		F442A0502284E05F0082840B /* searchfs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = searchfs.png; sourceTree = "<group>"; };
 		F46426FA246379FC00288C59 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F46426FB246379FC00288C59 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
@@ -64,6 +65,7 @@
 				F442A0502284E05F0082840B /* searchfs.png */,
 				F483552920C58700006A6EC2 /* searchfs.1 */,
 				F483552A20C6A544006A6EC2 /* searchfs.1.html */,
+				F40FE9D42EEF4224000AA4FA /* man2html.sh */,
 				F46A5ADC228CA5D00079B737 /* cat2html */,
 			);
 			name = Documentation;
@@ -117,7 +119,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1640;
+				LastUpgradeCheck = 2620;
 				ORGANIZATIONNAME = "Sveinbjorn Thordarson";
 				TargetAttributes = {
 					F4D2B39520C32F8400CD7371 = {
@@ -157,7 +159,8 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/bin/nroff -mandoc searchfs.1 | ./cat2html > searchfs.1.html\n\n    \n";
+			shellScript = "bash man2html.sh\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 

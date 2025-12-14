@@ -27,7 +27,7 @@ make
 make install
 ```
 
-Installs binary by default into `/usr/local/bin/`. Man page goes into `/usr/local/share/man/man1/`. These can be overridden with `DEST_DIR` and `MAND_DIR`.
+Installs binary by default into `/usr/local/bin/`. Man page goes into `/usr/local/share/man/man1/`. These can be overridden with `DEST_DIR` and `MAN_DIR`.
 
 ## Performance
 
@@ -73,7 +73,7 @@ python3 test.py
 
 ## Version History
 
-### 30/06/2025 - **0.4**
+### 03/07/2025 - **0.4**
 
 *   Bumped minimum macOS version to 11.0 (Big Sur).
 *   Removed fsgetpath compatibility shim and modernized code.

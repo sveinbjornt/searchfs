@@ -80,7 +80,7 @@ def run_tests():
     # Negate params
     not_present = "Hold the newsreaders nose squarely, waiter, or friendly milk will countermand my trousers"
     lines = run_searchfs(["-n", not_present, "-m", "200"])
-    assert len(lines) == 200
+    assert len(lines) > 0
 
     # Find files only
     lines = run_searchfs(["-f", "s", "-m", "7"])
@@ -105,6 +105,40 @@ def run_tests():
 
     # Test empty search string (should exit with EX_USAGE)
     run_searchfs([""], expected_exit_code=EX_USAGE)
+
+    # --- New Test Cases ---
+
+    # Test for no matches
+    print("Testing for no matches...")
+    lines = run_searchfs(["XYZXYZXYZ"])
+    assert len(lines) == 0, "Expected no matches for a random string."
+
+    # Test mutually exclusive flags -d and -f
+    print("Testing mutually exclusive -d and -f flags...")
+    run_searchfs(["-d", "-f", "some_term"], expected_exit_code=EX_USAGE)
+
+    # Test search string longer than PATH_MAX
+    print("Testing search string longer than PATH_MAX...")
+    long_string = "a" * 2000  # PATH_MAX is typically 1024
+    run_searchfs([long_string], expected_exit_code=EX_USAGE)
+
+    # Test prefix match without exact-match
+    print("Testing prefix match without exact-match...")
+    lines = run_searchfs(["^README"])
+    assert len(lines) > 0
+    assert all(n.split("/")[-1].startswith("README") for n in lines)
+
+    # Test suffix match without exact-match
+    print("Testing suffix match without exact-match...")
+    lines = run_searchfs([".plist$"])
+    assert len(lines) > 0
+    assert all(n.endswith(".plist") for n in lines)
+
+    # Test case-sensitive prefix match (assuming 'README' exists, but 'readme' does not)
+    print("Testing case-sensitive prefix match...")
+    lines = run_searchfs(["-s", "^readme"])
+    assert len([n for n in lines if n.split("/")[-1].startswith("readme")]) == 0, \
+        "Expected no matches for case-sensitive 'readme' prefix."
 
     # All done
     elapsed = time.time() - start

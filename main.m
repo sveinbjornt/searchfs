@@ -70,14 +70,16 @@ typedef struct packed_result *packed_result_p;
 #define MAX_MATCHES         20
 #define MAX_EBUSY_RETRIES   5
 #define DEFAULT_VOLUME      @"/"
+#define DATA_VOLUME         @"/System/Volumes/Data"
 
 
 // Prototypes
-static void do_searchfs_search(const char *volpath, const char *match_string);
+static unsigned int do_searchfs_search(const char *volpath, const char *match_string);
 static BOOL filter_result(const char *path, const char *match_string);
 static NSString *dev_to_mount_path(NSString *devPath);
 static BOOL is_mount_path(NSString *path);
 static BOOL vol_supports_searchfs(NSString *path);
+static BOOL data_volume_available(void);
 static void list_volumes(void);
 static void print_usage(void);
 static void print_version(void);
@@ -115,6 +117,7 @@ static BOOL negateParams = NO;
 static NSUInteger limit = 0;
 static BOOL startMatchOnly = NO;
 static BOOL endMatchOnly = NO;
+static BOOL volumeSpecified = NO;
 
 
 #pragma mark -
@@ -141,6 +144,7 @@ int main(int argc, const char *argv[]) {
             
             case 'v':
                 volumePath = dev_to_mount_path([@(optarg) stringByResolvingSymlinksInPath]);
+                volumeSpecified = YES;
                 break;
             
             case 'd':
@@ -209,7 +213,7 @@ int main(int argc, const char *argv[]) {
 
     // Verify that volume supports catalog search
     if (!vol_supports_searchfs(volumePath)) {
-        fprintf(stderr, "Voume does not support catalog search: %s\n", [volumePath cStringUsingEncoding:NSUTF8StringEncoding]);
+        fprintf(stderr, "Volume does not support catalog search: %s\n", [volumePath cStringUsingEncoding:NSUTF8StringEncoding]);
         exit(EX_UNAVAILABLE);
     }
     
@@ -238,19 +242,40 @@ int main(int argc, const char *argv[]) {
     if (startMatchOnly && endMatchOnly) {
         exactMatchOnly = YES;
     }
-    
-    // Do search
-    do_searchfs_search([volumePath cStringUsingEncoding:NSUTF8StringEncoding],
-                       [searchStr cStringUsingEncoding:NSUTF8StringEncoding]);
- 
+
+    // Multi-volume search strategy for modern macOS (Catalina+):
+    // - If no -v flag specified: search both / and /System/Volumes/Data (if available)
+    // - If -v explicitly specified: search only that volume
+    // This ensures comprehensive results while respecting user control
+    BOOL shouldSearchDataVolume = !volumeSpecified && data_volume_available();
+
+    unsigned int total_matches = 0;
+
+    // First search: Root volume (/ by default, or user-specified volume)
+    total_matches += do_searchfs_search([volumePath cStringUsingEncoding:NSUTF8StringEncoding],
+                                        [searchStr cStringUsingEncoding:NSUTF8StringEncoding]);
+
+    // Second search: Data volume (only if using default and limit not yet reached)
+    if (shouldSearchDataVolume && (!limit || total_matches < limit)) {
+        // Adjust limit to account for results already found
+        NSUInteger original_limit = limit;
+        if (limit > 0) {
+            limit = limit - total_matches;
+        }
+
+        total_matches += do_searchfs_search([DATA_VOLUME cStringUsingEncoding:NSUTF8StringEncoding],
+                                            [searchStr cStringUsingEncoding:NSUTF8StringEncoding]);
+
+        // Restore original limit
+        limit = original_limit;
+    }
+
     return EX_OK;
 }
 
 #pragma mark - search
 
-static void do_searchfs_search(const char *volpath, const char *match_string) {
-    fprintf(stderr, "DEBUG: Entering do_searchfs_search\n");
-    fflush(stderr);
+static unsigned int do_searchfs_search(const char *volpath, const char *match_string) {
     // See "man 2 searchfs" for further details
     int                     err = 0;
     int                     items_found = 0;
@@ -263,7 +288,8 @@ static void do_searchfs_search(const char *volpath, const char *match_string) {
     struct packed_name_attr info1;
     struct packed_attr_ref  info2;
     packed_result           result_buffer[MAX_MATCHES];
-    
+    unsigned int            match_cnt = 0;
+
 catalog_changed:
     items_found = 0; // Set this here in case we're completely restarting
     search_blk.searchattrs.bitmapcount = ATTR_BIT_MAP_COUNT;
@@ -341,18 +367,14 @@ catalog_changed:
     if (negateParams) {
         search_options |= SRCHFS_NEGATEPARAMS;
     }
-    
-    unsigned int match_cnt = 0;
 
     // Start searching
     do {
-        NSLog(@"DEBUG: searchfs() call - volpath: %s, search_options: %u", volpath, search_options);
         err = searchfs(volpath, &search_blk, &matches, 0, search_options, &search_state);
         if (err == -1) {
             err = errno;
         }
-        NSLog(@"DEBUG: searchfs() returned err: %d, matches: %lu", err, matches);
-        
+
         if ((err == 0 || err == EAGAIN) && matches > 0) {
             
             // Unpack the results
@@ -375,7 +397,7 @@ catalog_changed:
                         fprintf(stdout, "%s\n", path_buf);
                         match_cnt++;
                         if (limit && match_cnt >= limit) {
-                            return;
+                            return match_cnt;
                         }
                     }
                 } else {
@@ -406,6 +428,8 @@ catalog_changed:
         search_options &= ~SRCHFS_START;
 
     } while (err == EAGAIN);
+
+    return match_cnt;
 }
 
 #pragma mark - post-processing
@@ -416,13 +440,9 @@ BOOL filter_result(const char *path, const char *match_string) {
 
     // If no specific filtering options are set, perform a case-insensitive substring match.
     if (!caseSensitive && !startMatchOnly && !endMatchOnly) {
-        // Debugging: Print pathStr and matchStr
-        NSLog(@"DEBUG: filter_result - pathStr: %@, matchStr: %@", pathStr, matchStr);
         if ([pathStr localizedCaseInsensitiveContainsString:matchStr]) {
-            NSLog(@"DEBUG: filter_result - Match found, returning NO.");
             return NO; // Match found, don't filter out
         } else {
-            NSLog(@"DEBUG: filter_result - No match, returning YES.");
             return YES; // No match, filter out
         }
     }
@@ -479,19 +499,28 @@ static NSString *dev_to_mount_path(NSString *devPath) {
     // Look up mount point for device
     int fs_count = getfsstat(NULL, 0, MNT_NOWAIT);
     if (fs_count == -1) {
-        fprintf(stderr, "Error: %d\n", errno);
+        fprintf(stderr, "Error getting filesystem count: %s\n", strerror(errno));
         return nil;
     }
-    
-    struct statfs buf[256];
-    getfsstat(buf, fs_count * sizeof(buf[0]), MNT_NOWAIT);
-    
+
+    struct statfs *buf = malloc(fs_count * sizeof(struct statfs));
+    if (buf == NULL) {
+        fprintf(stderr, "Error allocating memory: %s\n", strerror(errno));
+        return nil;
+    }
+
+    getfsstat(buf, fs_count * sizeof(struct statfs), MNT_NOWAIT);
+
+    NSString *mountPoint = nil;
     for (int i = 0; i < fs_count; ++i) {
         if ([@(buf[i].f_mntfromname) isEqualToString:devPath]) {
-            return @(buf[i].f_mntonname);
+            mountPoint = @(buf[i].f_mntonname);
+            break;
         }
     }
-    return nil;
+
+    free(buf);
+    return mountPoint;
 }
 
 static BOOL is_mount_path(NSString *path) {
@@ -508,61 +537,108 @@ static BOOL is_mount_path(NSString *path) {
 }
 
 static BOOL vol_supports_searchfs(NSString *path) {
-    
+
     struct vol_attr_buf {
         u_int32_t               size;
         vol_capabilities_attr_t vol_capabilities;
     } __attribute__((aligned(4), packed));
-    
+
     const char *p = [path cStringUsingEncoding:NSUTF8StringEncoding];
-    
+
     struct attrlist attrList;
     memset(&attrList, 0, sizeof(attrList));
     attrList.bitmapcount = ATTR_BIT_MAP_COUNT;
     attrList.volattr = (ATTR_VOL_INFO | ATTR_VOL_CAPABILITIES);
-    
+
     struct vol_attr_buf attrBuf;
     memset(&attrBuf, 0, sizeof(attrBuf));
-    
+
     int err = getattrlist(p, &attrList, &attrBuf, sizeof(attrBuf), 0);
     if (err != 0) {
         err = errno;
-        fprintf(stderr, "Error %d getting attrs for volume %s\n", err, p);
+        fprintf(stderr, "Error getting attributes for volume %s: %s\n", p, strerror(err));
         return NO;
     }
-    
+
     assert(attrBuf.size == sizeof(attrBuf));
-        
+
     if ((attrBuf.vol_capabilities.valid[VOL_CAPABILITIES_INTERFACES] & VOL_CAP_INT_SEARCHFS) == VOL_CAP_INT_SEARCHFS) {
         if ((attrBuf.vol_capabilities.capabilities[VOL_CAPABILITIES_INTERFACES] & VOL_CAP_INT_SEARCHFS) == VOL_CAP_INT_SEARCHFS) {
             return YES;
         }
     }
-    
+
+    return NO;
+}
+
+static BOOL data_volume_available(void) {
+    // Check if /System/Volumes/Data exists and supports searchfs
+    if (![[NSFileManager defaultManager] fileExistsAtPath:DATA_VOLUME]) {
+        return NO;
+    }
+
+    // Silently check if volume supports searchfs (don't print errors)
+    struct vol_attr_buf {
+        u_int32_t               size;
+        vol_capabilities_attr_t vol_capabilities;
+    } __attribute__((aligned(4), packed));
+
+    const char *p = [DATA_VOLUME cStringUsingEncoding:NSUTF8StringEncoding];
+
+    struct attrlist attrList;
+    memset(&attrList, 0, sizeof(attrList));
+    attrList.bitmapcount = ATTR_BIT_MAP_COUNT;
+    attrList.volattr = (ATTR_VOL_INFO | ATTR_VOL_CAPABILITIES);
+
+    struct vol_attr_buf attrBuf;
+    memset(&attrBuf, 0, sizeof(attrBuf));
+
+    int err = getattrlist(p, &attrList, &attrBuf, sizeof(attrBuf), 0);
+    if (err != 0) {
+        return NO;  // Fail silently - data volume not available for searching
+    }
+
+    if (attrBuf.size != sizeof(attrBuf)) {
+        return NO;
+    }
+
+    if ((attrBuf.vol_capabilities.valid[VOL_CAPABILITIES_INTERFACES] & VOL_CAP_INT_SEARCHFS) == VOL_CAP_INT_SEARCHFS) {
+        if ((attrBuf.vol_capabilities.capabilities[VOL_CAPABILITIES_INTERFACES] & VOL_CAP_INT_SEARCHFS) == VOL_CAP_INT_SEARCHFS) {
+            return YES;
+        }
+    }
+
     return NO;
 }
 
 static void list_volumes(void) {
-    
+
     int fs_count = getfsstat(NULL, 0, MNT_NOWAIT);
     if (fs_count == -1) {
-        fprintf(stderr, "Error: %d\n", errno);
+        fprintf(stderr, "Error getting filesystem count: %s\n", strerror(errno));
         return;
     }
-    
-    struct statfs buf[256];
-    getfsstat(buf, fs_count * sizeof(buf[0]), MNT_NOWAIT);
+
+    struct statfs *buf = malloc(fs_count * sizeof(struct statfs));
+    if (buf == NULL) {
+        fprintf(stderr, "Error allocating memory: %s\n", strerror(errno));
+        return;
+    }
+
+    getfsstat(buf, fs_count * sizeof(struct statfs), MNT_NOWAIT);
     
     for (int i = 0; i < fs_count; ++i) {
         if (!vol_supports_searchfs(@(buf[i].f_mntonname))) {
             continue;
         }
-        
+
         printf("%s (%-4s): %s\n",
                buf[i].f_mntfromname,
                buf[i].f_fstypename,
                buf[i].f_mntonname);
     }
+
+    free(buf);
 }
 
 #pragma mark -

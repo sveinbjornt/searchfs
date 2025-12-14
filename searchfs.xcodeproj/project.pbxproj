@@ -13,12 +13,13 @@
 /* Begin PBXFileReference section */
 		F40BC84628AD25AA00D59071 /* macos.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = macos.yml; path = .github/workflows/macos.yml; sourceTree = "<group>"; };
 		F40FE9D42EEF4224000AA4FA /* man2html.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = man2html.sh; sourceTree = "<group>"; };
+		F42B450E2EEF604100FCB379 /* CHANGES.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = CHANGES.md; sourceTree = "<group>"; };
+		F42B450F2EEF604900FCB379 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		F442A0502284E05F0082840B /* searchfs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = searchfs.png; sourceTree = "<group>"; };
 		F46426FA246379FC00288C59 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F46426FB246379FC00288C59 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		F46A5ADC228CA5D00079B737 /* cat2html */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = cat2html; sourceTree = "<group>"; };
 		F46A5ADD228CA79C0079B737 /* test.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = test.py; sourceTree = "<group>"; };
-		F481835222726F12002738AE /* CHANGES.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CHANGES.txt; sourceTree = "<group>"; };
 		F481835522727BC9002738AE /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		F483552520C586EF006A6EC2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F483552620C586EF006A6EC2 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
@@ -39,47 +40,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		F46426F9246379F300288C59 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				F46426FA246379FC00288C59 /* Foundation.framework */,
-				F46426FB246379FC00288C59 /* CoreServices.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		F46426FC24637A3700288C59 /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				F46A5ADD228CA79C0079B737 /* test.py */,
-			);
-			name = Tests;
-			sourceTree = "<group>";
-		};
-		F46426FD24637A5C00288C59 /* Documentation */ = {
-			isa = PBXGroup;
-			children = (
-				F483552520C586EF006A6EC2 /* README.md */,
-				F481835222726F12002738AE /* CHANGES.txt */,
-				F483552620C586EF006A6EC2 /* LICENSE.txt */,
-				F442A0502284E05F0082840B /* searchfs.png */,
-				F483552920C58700006A6EC2 /* searchfs.1 */,
-				F483552A20C6A544006A6EC2 /* searchfs.1.html */,
-				F40FE9D42EEF4224000AA4FA /* man2html.sh */,
-				F46A5ADC228CA5D00079B737 /* cat2html */,
-			);
-			name = Documentation;
-			sourceTree = "<group>";
-		};
 		F4D2B38D20C32F8400CD7371 = {
 			isa = PBXGroup;
 			children = (
 				F40BC84628AD25AA00D59071 /* macos.yml */,
 				F481835522727BC9002738AE /* Makefile */,
 				F483552720C586FB006A6EC2 /* main.m */,
-				F46426FD24637A5C00288C59 /* Documentation */,
-				F46426FC24637A3700288C59 /* Tests */,
-				F46426F9246379F300288C59 /* Frameworks */,
+				F483552520C586EF006A6EC2 /* README.md */,
+				F42B450E2EEF604100FCB379 /* CHANGES.md */,
+				F42B450F2EEF604900FCB379 /* TODO.md */,
+				F483552620C586EF006A6EC2 /* LICENSE.txt */,
+				F442A0502284E05F0082840B /* searchfs.png */,
+				F483552920C58700006A6EC2 /* searchfs.1 */,
+				F483552A20C6A544006A6EC2 /* searchfs.1.html */,
+				F40FE9D42EEF4224000AA4FA /* man2html.sh */,
+				F46A5ADC228CA5D00079B737 /* cat2html */,
+				F46A5ADD228CA79C0079B737 /* test.py */,
+				F46426FA246379FC00288C59 /* Foundation.framework */,
+				F46426FB246379FC00288C59 /* CoreServices.framework */,
 				F4D2B39720C32F8400CD7371 /* Products */,
 			);
 			sourceTree = "<group>";

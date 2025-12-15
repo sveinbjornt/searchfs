@@ -78,7 +78,7 @@ static unsigned int do_searchfs_search(const char *volpath, const char *match_st
 static BOOL filter_result(const char *path, const char *match_string);
 static NSString *dev_to_mount_path(NSString *devPath);
 static BOOL is_mount_path(NSString *path);
-static BOOL vol_supports_searchfs(NSString *path);
+static BOOL vol_supports_searchfs(NSString *path, BOOL silent);
 static BOOL data_volume_available(void);
 static void list_volumes(void);
 static void print_usage(void);
@@ -216,7 +216,7 @@ int main(int argc, const char *argv[]) {
     }
 
     // Verify that volume supports catalog search
-    if (!vol_supports_searchfs(volumePath)) {
+    if (!vol_supports_searchfs(volumePath, NO)) {
         fprintf(stderr, "Volume does not support catalog search: %s\n", [volumePath cStringUsingEncoding:NSUTF8StringEncoding]);
         exit(EX_UNAVAILABLE);
     }
@@ -542,7 +542,7 @@ static BOOL is_mount_path(NSString *path) {
 //    return NO;
 }
 
-static BOOL vol_supports_searchfs(NSString *path) {
+static BOOL vol_supports_searchfs(NSString *path, BOOL silent) {
 
     struct vol_attr_buf {
         u_int32_t               size;
@@ -561,12 +561,16 @@ static BOOL vol_supports_searchfs(NSString *path) {
 
     int err = getattrlist(p, &attrList, &attrBuf, sizeof(attrBuf), 0);
     if (err != 0) {
-        err = errno;
-        fprintf(stderr, "Error getting attributes for volume %s: %s\n", p, strerror(err));
+        if (!silent) {
+            err = errno;
+            fprintf(stderr, "Error getting attributes for volume %s: %s\n", p, strerror(err));
+        }
         return NO;
     }
 
-    assert(attrBuf.size == sizeof(attrBuf));
+    if (attrBuf.size != sizeof(attrBuf)) {
+        return NO;
+    }
 
     if ((attrBuf.vol_capabilities.valid[VOL_CAPABILITIES_INTERFACES] & VOL_CAP_INT_SEARCHFS) == VOL_CAP_INT_SEARCHFS) {
         if ((attrBuf.vol_capabilities.capabilities[VOL_CAPABILITIES_INTERFACES] & VOL_CAP_INT_SEARCHFS) == VOL_CAP_INT_SEARCHFS) {
@@ -583,38 +587,8 @@ static BOOL data_volume_available(void) {
         return NO;
     }
 
-    // Silently check if volume supports searchfs (don't print errors)
-    struct vol_attr_buf {
-        u_int32_t               size;
-        vol_capabilities_attr_t vol_capabilities;
-    } __attribute__((aligned(4), packed));
-
-    const char *p = [DATA_VOLUME cStringUsingEncoding:NSUTF8StringEncoding];
-
-    struct attrlist attrList;
-    memset(&attrList, 0, sizeof(attrList));
-    attrList.bitmapcount = ATTR_BIT_MAP_COUNT;
-    attrList.volattr = (ATTR_VOL_INFO | ATTR_VOL_CAPABILITIES);
-
-    struct vol_attr_buf attrBuf;
-    memset(&attrBuf, 0, sizeof(attrBuf));
-
-    int err = getattrlist(p, &attrList, &attrBuf, sizeof(attrBuf), 0);
-    if (err != 0) {
-        return NO;  // Fail silently - data volume not available for searching
-    }
-
-    if (attrBuf.size != sizeof(attrBuf)) {
-        return NO;
-    }
-
-    if ((attrBuf.vol_capabilities.valid[VOL_CAPABILITIES_INTERFACES] & VOL_CAP_INT_SEARCHFS) == VOL_CAP_INT_SEARCHFS) {
-        if ((attrBuf.vol_capabilities.capabilities[VOL_CAPABILITIES_INTERFACES] & VOL_CAP_INT_SEARCHFS) == VOL_CAP_INT_SEARCHFS) {
-            return YES;
-        }
-    }
-
-    return NO;
+    // Check silently (don't print errors if it doesn't support searchfs)
+    return vol_supports_searchfs(DATA_VOLUME, YES);
 }
 
 static void list_volumes(void) {
@@ -639,7 +613,7 @@ static void list_volumes(void) {
     }
 
     for (int i = 0; i < actual_count; ++i) {
-        if (!vol_supports_searchfs(@(buf[i].f_mntonname))) {
+        if (!vol_supports_searchfs(@(buf[i].f_mntonname), NO)) {
             continue;
         }
 

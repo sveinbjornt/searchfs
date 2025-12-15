@@ -5,7 +5,8 @@
 
 # searchfs
 
-<img src="searchfs.png" width="164" height="164" alt="searchfs icon" style="float: right; margin-left: 20px; margin-bottom: 20px;" align="right">
+<img src="searchfs.png" width="164" height="164" alt="searchfs icon" 
+style="float: right; margin-left: 20px; margin-bottom: 20px;" align="right">
 
 `searchfs` is a macOS command line tool to quickly search by filename 
 on entire APFS and HFS+ volumes. Searching takes place at the driver 
@@ -19,7 +20,7 @@ standard output in the order they are found in the catalog. See the
 
 ## Download
 
-* [⬇ Download latest searchfs binary](https://sveinbjorn.org/files/software/searchfs.zip) (v0.4, <20 KB, Intel 64-bit, macOS 11.0 or later)
+* [⬇ Download latest searchfs binary](https://sveinbjorn.org/files/software/searchfs.zip) (v0.4, <20 KB, Intel 64-bit, macOS 11.5 or later)
 
 ## Documentation
 
@@ -41,11 +42,10 @@ Installs binary by default into `/usr/local/bin/`. Man page goes into
 
 According to some basic benchmarks, `searchfs` runs up to **100x** faster 
 than `find` when performing full-volume search on APFS filesystems, and 
-even faster on HFS+.
+even faster on HFS+. This can be tested with the `benchmark.sh` script.
 
-Although I have yet to test this properly, `searchfs` is probably *much* 
+Although I have yet to test this properly, it’s is probably *much* 
 *much* faster than `find` on hard disk drives, which have higher seek times. 
-It is also very fast indeed on file systems with a small number of files.
 
 ## Testing
 
@@ -55,7 +55,7 @@ You need Python 3 installed.
 python3 test.py
 ```
 
-## History
+## History Lesson
 
 Apple added file system catalog search to Mac OS with the introduction of 
 the Hierarchical File System (HFS) back in 1985. HFS replaced the previous
@@ -65,7 +65,7 @@ thus arranged the entire directory tree into one large file on the disk,
 with interlinked nodes that did not match the hierarchical folder structure. 
 This meant that volumes could be searched very quickly regardless of size.
 
-The Classic Mac OS exposed this functionality via the `FSCatalogSearch()`
+Classic Mac OS exposed this functionality via the `FSCatalogSearch()`
 function, which iterated efficiently over the nodes, thus minimizing disk
 seek times. In the pre-SSD era, this gave the Mac a significant performance
 advantage over Windows when it came to full-volume search. For a long time,

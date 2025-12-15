@@ -17,6 +17,7 @@
 		F42B450E2EEF604100FCB379 /* CHANGES.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = CHANGES.md; sourceTree = "<group>"; };
 		F42B450F2EEF604900FCB379 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		F42B45102EEF978500FCB379 /* benchmark.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = benchmark.sh; sourceTree = "<group>"; };
+		F42B45132EF0B17B00FCB379 /* searchfs.rb */ = {isa = PBXFileReference; lastKnownFileType = text.script.ruby; path = searchfs.rb; sourceTree = "<group>"; };
 		F442A0502284E05F0082840B /* searchfs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = searchfs.png; sourceTree = "<group>"; };
 		F46426FA246379FC00288C59 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		F46A5ADC228CA5D00079B737 /* cat2html */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = cat2html; sourceTree = "<group>"; };
@@ -58,6 +59,7 @@
 				F42B45102EEF978500FCB379 /* benchmark.sh */,
 				F40FE9D42EEF4224000AA4FA /* man2html.sh */,
 				F46A5ADC228CA5D00079B737 /* cat2html */,
+				F42B45132EF0B17B00FCB379 /* searchfs.rb */,
 				F46A5ADD228CA79C0079B737 /* test.py */,
 				F46426FA246379FC00288C59 /* Foundation.framework */,
 				F4D2B39720C32F8400CD7371 /* Products */,

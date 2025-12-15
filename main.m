@@ -559,6 +559,9 @@ static BOOL vol_supports_searchfs(NSString *path, BOOL silent) {
     }
 
     if (attrBuf.size != sizeof(attrBuf)) {
+        if (!silent) {
+            fprintf(stderr, "Attribute buffer size mismatch for volume %s: expected %zu, got %u\n", p, sizeof(attrBuf), attrBuf.size);
+        }
         return NO;
     }
 

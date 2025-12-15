@@ -138,6 +138,15 @@ def run_tests():
     assert len(lines) == 0, \
         f"Expected no matches for case-sensitive 'readme' prefix, but got {len(lines)} results"
 
+    # Test negate params (files NOT exactly named "ls")
+    print("Testing negate params with exact match...")
+    lines = run_searchfs(["-v", "/", "-n", "-e", "ls", "-m", "20"])
+    assert len(lines) == 20, f"Expected 20 results from negated search, got {len(lines)}"
+    # Verify none of the results are exactly named "ls"
+    for path in lines:
+        basename = path.split("/")[-1]
+        assert basename != "ls", f"Found 'ls' in negated search: {path}"
+
     # Test multi-volume search (default behavior)
     print("Testing multi-volume search...")
     lines = run_searchfs(["Foundation", "-m", "10"])

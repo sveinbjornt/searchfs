@@ -109,7 +109,7 @@ def run_tests():
     # Test for no matches
     print("Testing for no matches...")
     lines = run_searchfs(["-v", "/", "XYZXYZXYZ"])
-    assert len(lines) == 0, "Expected no matches for a random string but got %s".format(lines)
+    assert len(lines) == 0, f"Expected no matches for a random string but got {lines}"
 
     # Test mutually exclusive flags -d and -f
     print("Testing mutually exclusive -d and -f flags...")

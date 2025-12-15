@@ -1,6 +1,6 @@
 # Version history for searchfs
 
-## 0.4
+## 0.4 - 15/12/2025
     * Now requires macOS 11+
 
 ## 0.3

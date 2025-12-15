@@ -6,7 +6,7 @@
 .Nd fast filename search on HFS+ and APFS volumes
 .Sh SYNOPSIS
 .Nm
-.Op Fl ldfespixnmoh
+.Op Fl ldfespinmoh
 .Op Fl v Ar mount_point/device_namelist_volumes
 .Ar search_term
 .Sh DESCRIPTION
@@ -43,9 +43,6 @@ are configured into the kernel by Launch Services.
 .It Fl i, -skip-invisibles
 Don't match invisible file system objects (that is, objects with the
 Finder attribute "Invisible" set) or any objects within invisible directories.
-.It Fl x, -skip-inappropriate
-Don't match any file system objects that are within an "inappropriate" directory.
-Apple's current list of inappropriate directories contains one item: /System.
 .It Fl n, -negate-params
 Show all file system objects that do *not* match the search term.
 .It Fl m, -limit Ar number

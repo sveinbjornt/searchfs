@@ -87,7 +87,7 @@ static void print_version(void);
 
 static const float program_version = 0.4f;
 
-static const char optstring[] = "v:dfespixnm:loh";
+static const char optstring[] = "v:dfespinm:loh";
 
 static struct option long_options[] = {
     {"volume",                  required_argument,      0,  'v'},
@@ -97,7 +97,6 @@ static struct option long_options[] = {
     {"case-sensitive",          no_argument,            0,  's'},
     {"skip-packages",           no_argument,            0,  'p'},
     {"skip-invisibles",         no_argument,            0,  'i'},
-    {"skip-inappropriate",      no_argument,            0,  'x'},
     {"negate-params",           no_argument,            0,  'n'},
     {"limit",                   required_argument,      0,  'm'},
     {"list",                    no_argument,            0,  'l'},
@@ -112,7 +111,6 @@ static BOOL exactMatchOnly = NO;
 static BOOL caseSensitive = NO;
 static BOOL skipPackages = NO;
 static BOOL skipInvisibles = NO;
-static BOOL skipInappropriate = NO;
 static BOOL negateParams = NO;
 static NSUInteger limit = 0;
 static BOOL startMatchOnly = NO;
@@ -174,11 +172,7 @@ int main(int argc, const char *argv[]) {
             case 'i':
                 skipInvisibles = YES;
                 break;
-            
-            case 'x':
-                skipInappropriate = YES;
-                break;
-            
+
             case 'n':
                 negateParams = YES;
                 break;
@@ -363,11 +357,7 @@ catalog_changed:
     if (skipInvisibles) {
         search_options |= SRCHFS_SKIPINVISIBLE;
     }
-    
-    if (skipInappropriate) {
-        search_options |= SRCHFS_SKIPINAPPROPRIATE;
-    }
-    
+
     if (negateParams) {
         search_options |= SRCHFS_NEGATEPARAMS;
     }
@@ -629,7 +619,7 @@ static void list_volumes(void) {
 #pragma mark -
 
 static void print_usage(void) {
-    fprintf(stderr, "usage: searchfs [-ldfespixnmoh] [-v mount_point] search_term\n");
+    fprintf(stderr, "usage: searchfs [-ldfespinmoh] [-v mount_point] search_term\n");
 }
 
 static void print_version(void) {

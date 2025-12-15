@@ -24,3 +24,4 @@ dsa_priv.pem
 
 Podfile.lock
 pods
+*.zip

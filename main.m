@@ -438,15 +438,12 @@ BOOL filter_result(const char *path, const char *match_string) {
     NSString *pathStr = @(path);
     NSString *matchStr = @(match_string);
 
-    // If no specific filtering options are set, perform a case-insensitive substring match.
+    // If no additional filtering options are set, trust the kernel's filtering
+    // (searchfs() already did case-insensitive substring matching via SRCHFS_MATCHPARTIALNAMES)
     if (!caseSensitive && !startMatchOnly && !endMatchOnly) {
-        if ([pathStr localizedCaseInsensitiveContainsString:matchStr]) {
-            return NO; // Match found, don't filter out
-        } else {
-            return YES; // No match, filter out
-        }
+        return NO; // Don't filter out - kernel already matched it
     }
-    
+
     if (caseSensitive) {
         NSString *escMatch = [NSRegularExpression escapedTemplateForString:matchStr];
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:escMatch
@@ -509,10 +506,15 @@ static NSString *dev_to_mount_path(NSString *devPath) {
         return nil;
     }
 
-    getfsstat(buf, fs_count * sizeof(struct statfs), MNT_NOWAIT);
+    int actual_count = getfsstat(buf, fs_count * sizeof(struct statfs), MNT_NOWAIT);
+    if (actual_count == -1) {
+        fprintf(stderr, "Error getting filesystem information: %s\n", strerror(errno));
+        free(buf);
+        return nil;
+    }
 
     NSString *mountPoint = nil;
-    for (int i = 0; i < fs_count; ++i) {
+    for (int i = 0; i < actual_count; ++i) {
         if ([@(buf[i].f_mntfromname) isEqualToString:devPath]) {
             mountPoint = @(buf[i].f_mntonname);
             break;
@@ -625,9 +627,14 @@ static void list_volumes(void) {
         return;
     }
 
-    getfsstat(buf, fs_count * sizeof(struct statfs), MNT_NOWAIT);
-    
-    for (int i = 0; i < fs_count; ++i) {
+    int actual_count = getfsstat(buf, fs_count * sizeof(struct statfs), MNT_NOWAIT);
+    if (actual_count == -1) {
+        fprintf(stderr, "Error getting filesystem information: %s\n", strerror(errno));
+        free(buf);
+        return;
+    }
+
+    for (int i = 0; i < actual_count; ++i) {
         if (!vol_supports_searchfs(@(buf[i].f_mntonname))) {
             continue;
         }

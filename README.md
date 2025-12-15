@@ -44,8 +44,8 @@ According to some basic benchmarks, `searchfs` runs up to **100x** faster
 than `find` when performing full-volume search on APFS filesystems, and 
 even faster on HFS+. This can be tested with the `benchmark.sh` script.
 
-Although I have yet to test this properly, it’s is probably *much* 
-*much* faster than `find` on hard disk drives, which have higher seek times. 
+Although I have yet to test this properly, it is probably *much*
+faster than `find` on hard disk drives, which have higher seek times. 
 
 ## Testing
 

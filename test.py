@@ -52,7 +52,7 @@ def run_tests():
     device = rootvol.split()[0]
 
     # Test with volume specified by device
-    lines = run_searchfs(["-v", "/", "s", "-m", "10"])
+    lines = run_searchfs(["-v", device, "s", "-m", "10"])
     assert len(lines) == 10
 
     # Test with volume specified by mount point

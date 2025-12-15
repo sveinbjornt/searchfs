@@ -3,7 +3,7 @@
 BIN_NAME = searchfs
 MAN_NAME = searchfs.1
 CC=clang
-CFLAGS = -Os -g -mmacosx-version-min=11.0
+CFLAGS = -Os -g -mmacosx-version-min=11.5
 DEST_DIR ?= /usr/local/bin/
 MAN_DIR ?= /usr/local/share/man/man1/
 FRAMEWORKS = -framework Foundation -framework CoreServices

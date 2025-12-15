@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F42B45122EEF9AAA00FCB379 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46426FA246379FC00288C59 /* Foundation.framework */; };
 		F483552820C586FB006A6EC2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F483552720C586FB006A6EC2 /* main.m */; };
 /* End PBXBuildFile section */
 
@@ -18,7 +19,6 @@
 		F42B45102EEF978500FCB379 /* benchmark.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = benchmark.sh; sourceTree = "<group>"; };
 		F442A0502284E05F0082840B /* searchfs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = searchfs.png; sourceTree = "<group>"; };
 		F46426FA246379FC00288C59 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		F46426FB246379FC00288C59 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		F46A5ADC228CA5D00079B737 /* cat2html */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = cat2html; sourceTree = "<group>"; };
 		F46A5ADD228CA79C0079B737 /* test.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = test.py; sourceTree = "<group>"; };
 		F481835522727BC9002738AE /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
@@ -35,6 +35,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F42B45122EEF9AAA00FCB379 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,7 +60,6 @@
 				F46A5ADC228CA5D00079B737 /* cat2html */,
 				F46A5ADD228CA79C0079B737 /* test.py */,
 				F46426FA246379FC00288C59 /* Foundation.framework */,
-				F46426FB246379FC00288C59 /* CoreServices.framework */,
 				F4D2B39720C32F8400CD7371 /* Products */,
 			);
 			sourceTree = "<group>";

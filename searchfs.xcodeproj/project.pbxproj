@@ -3,33 +3,24 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F42B45122EEF9AAA00FCB379 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F46426FA246379FC00288C59 /* Foundation.framework */; };
 		F483552820C586FB006A6EC2 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F483552720C586FB006A6EC2 /* main.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		F4D2B39420C32F8400CD7371 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 12;
-			dstPath = /usr/share/man/man1;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		F40BC84628AD25AA00D59071 /* macos.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; name = macos.yml; path = .github/workflows/macos.yml; sourceTree = "<group>"; };
+		F40FE9D42EEF4224000AA4FA /* man2html.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = man2html.sh; sourceTree = "<group>"; };
+		F42B450E2EEF604100FCB379 /* CHANGES.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = CHANGES.md; sourceTree = "<group>"; };
+		F42B450F2EEF604900FCB379 /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
+		F42B45102EEF978500FCB379 /* benchmark.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = benchmark.sh; sourceTree = "<group>"; };
 		F442A0502284E05F0082840B /* searchfs.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = searchfs.png; sourceTree = "<group>"; };
 		F46426FA246379FC00288C59 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
-		F46426FB246379FC00288C59 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		F46A5ADC228CA5D00079B737 /* cat2html */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = cat2html; sourceTree = "<group>"; };
 		F46A5ADD228CA79C0079B737 /* test.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = test.py; sourceTree = "<group>"; };
-		F481835222726F12002738AE /* CHANGES.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = CHANGES.txt; sourceTree = "<group>"; };
 		F481835522727BC9002738AE /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		F483552520C586EF006A6EC2 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		F483552620C586EF006A6EC2 /* LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
@@ -44,52 +35,31 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F42B45122EEF9AAA00FCB379 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		F46426F9246379F300288C59 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				F46426FA246379FC00288C59 /* Foundation.framework */,
-				F46426FB246379FC00288C59 /* CoreServices.framework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		F46426FC24637A3700288C59 /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				F46A5ADD228CA79C0079B737 /* test.py */,
-			);
-			name = Tests;
-			sourceTree = "<group>";
-		};
-		F46426FD24637A5C00288C59 /* Documentation */ = {
-			isa = PBXGroup;
-			children = (
-				F483552520C586EF006A6EC2 /* README.md */,
-				F481835222726F12002738AE /* CHANGES.txt */,
-				F483552620C586EF006A6EC2 /* LICENSE.txt */,
-				F442A0502284E05F0082840B /* searchfs.png */,
-				F483552920C58700006A6EC2 /* searchfs.1 */,
-				F483552A20C6A544006A6EC2 /* searchfs.1.html */,
-				F46A5ADC228CA5D00079B737 /* cat2html */,
-			);
-			name = Documentation;
-			sourceTree = "<group>";
-		};
 		F4D2B38D20C32F8400CD7371 = {
 			isa = PBXGroup;
 			children = (
 				F40BC84628AD25AA00D59071 /* macos.yml */,
 				F481835522727BC9002738AE /* Makefile */,
 				F483552720C586FB006A6EC2 /* main.m */,
-				F46426FD24637A5C00288C59 /* Documentation */,
-				F46426FC24637A3700288C59 /* Tests */,
-				F46426F9246379F300288C59 /* Frameworks */,
+				F483552520C586EF006A6EC2 /* README.md */,
+				F42B450E2EEF604100FCB379 /* CHANGES.md */,
+				F42B450F2EEF604900FCB379 /* TODO.md */,
+				F483552620C586EF006A6EC2 /* LICENSE.txt */,
+				F442A0502284E05F0082840B /* searchfs.png */,
+				F483552920C58700006A6EC2 /* searchfs.1 */,
+				F483552A20C6A544006A6EC2 /* searchfs.1.html */,
+				F42B45102EEF978500FCB379 /* benchmark.sh */,
+				F40FE9D42EEF4224000AA4FA /* man2html.sh */,
+				F46A5ADC228CA5D00079B737 /* cat2html */,
+				F46A5ADD228CA79C0079B737 /* test.py */,
+				F46426FA246379FC00288C59 /* Foundation.framework */,
 				F4D2B39720C32F8400CD7371 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -111,8 +81,7 @@
 			buildPhases = (
 				F4D2B39220C32F8400CD7371 /* Sources */,
 				F4D2B39320C32F8400CD7371 /* Frameworks */,
-				F4D2B39420C32F8400CD7371 /* CopyFiles */,
-				F483552B20C6A850006A6EC2 /* ShellScript */,
+				F483552B20C6A850006A6EC2 /* Create Man Page HTML */,
 			);
 			buildRules = (
 			);
@@ -129,7 +98,8 @@
 		F4D2B38E20C32F8400CD7371 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1140;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 2620;
 				ORGANIZATIONNAME = "Sveinbjorn Thordarson";
 				TargetAttributes = {
 					F4D2B39520C32F8400CD7371 = {
@@ -156,18 +126,21 @@
 /* End PBXProject section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		F483552B20C6A850006A6EC2 /* ShellScript */ = {
+		F483552B20C6A850006A6EC2 /* Create Man Page HTML */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Create Man Page HTML";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/bin/nroff -mandoc searchfs.1 | ./cat2html > searchfs.1.html\n\n    ";
+			shellScript = "bash man2html.sh\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -209,6 +182,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -220,8 +194,10 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEPLOYMENT_POSTPROCESSING = YES;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -236,7 +212,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CFLAGS = "";
@@ -272,6 +248,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -283,8 +260,10 @@
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEPLOYMENT_POSTPROCESSING = YES;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -293,7 +272,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_CFLAGS = "";
 				SDKROOT = macosx;
@@ -306,10 +285,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5WX26Y89JP;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
@@ -319,10 +299,11 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 5WX26Y89JP;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_HARDENED_RUNTIME = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 11.5;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 			};

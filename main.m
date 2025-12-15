@@ -70,25 +70,24 @@ typedef struct packed_result *packed_result_p;
 #define MAX_MATCHES         20
 #define MAX_EBUSY_RETRIES   5
 #define DEFAULT_VOLUME      @"/"
+#define DATA_VOLUME         @"/System/Volumes/Data"
 
 
 // Prototypes
-static void do_searchfs_search(const char *volpath, const char *match_string);
+static unsigned int do_searchfs_search(const char *volpath, const char *match_string);
 static BOOL filter_result(const char *path, const char *match_string);
-static BOOL has_fsgetpath(void);
-static ssize_t fsgetpath_compat(char * buf, size_t buflen, fsid_t * fsid, uint64_t obj_id);
-static ssize_t fsgetpath_legacy(char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id);
 static NSString *dev_to_mount_path(NSString *devPath);
 static BOOL is_mount_path(NSString *path);
-static BOOL vol_supports_searchfs(NSString *path);
+static BOOL vol_supports_searchfs(NSString *path, BOOL silent);
+static BOOL data_volume_available(void);
 static void list_volumes(void);
 static void print_usage(void);
 static void print_version(void);
 
 
-static const float program_version = 0.3f;
+static const float program_version = 0.4f;
 
-static const char optstring[] = "v:dfespixnm:loh";
+static const char optstring[] = "v:dfespinm:loh";
 
 static struct option long_options[] = {
     {"volume",                  required_argument,      0,  'v'},
@@ -98,7 +97,6 @@ static struct option long_options[] = {
     {"case-sensitive",          no_argument,            0,  's'},
     {"skip-packages",           no_argument,            0,  'p'},
     {"skip-invisibles",         no_argument,            0,  'i'},
-    {"skip-inappropriate",      no_argument,            0,  'x'},
     {"negate-params",           no_argument,            0,  'n'},
     {"limit",                   required_argument,      0,  'm'},
     {"list",                    no_argument,            0,  'l'},
@@ -107,28 +105,26 @@ static struct option long_options[] = {
     {0,                         0,                      0,    0}
 };
 
-static BOOL fsgetpathAvailable = NO;
-
 static BOOL dirsOnly = NO;
 static BOOL filesOnly = NO;
 static BOOL exactMatchOnly = NO;
 static BOOL caseSensitive = NO;
 static BOOL skipPackages = NO;
 static BOOL skipInvisibles = NO;
-static BOOL skipInappropriate = NO;
 static BOOL negateParams = NO;
 static NSUInteger limit = 0;
 static BOOL startMatchOnly = NO;
 static BOOL endMatchOnly = NO;
+static BOOL volumeSpecified = NO;
 
 
 #pragma mark -
 
 int main(int argc, const char *argv[]) {
     NSString *volumePath = DEFAULT_VOLUME;
-    
-    // Check if running macOS 10.13 or later
-    fsgetpathAvailable = has_fsgetpath();
+
+
+
     
     // Line-buffered output
     setvbuf(stdout, NULL, _IOLBF, BUFSIZ);
@@ -146,6 +142,11 @@ int main(int argc, const char *argv[]) {
             
             case 'v':
                 volumePath = dev_to_mount_path([@(optarg) stringByResolvingSymlinksInPath]);
+                if (volumePath == nil) {
+                    fprintf(stderr, "Error: Could not resolve device to mount path for '%s'.\n", optarg);
+                    exit(EX_OSERR);
+                }
+                volumeSpecified = YES;
                 break;
             
             case 'd':
@@ -171,11 +172,7 @@ int main(int argc, const char *argv[]) {
             case 'i':
                 skipInvisibles = YES;
                 break;
-            
-            case 'x':
-                skipInappropriate = YES;
-                break;
-            
+
             case 'n':
                 negateParams = YES;
                 break;
@@ -213,8 +210,8 @@ int main(int argc, const char *argv[]) {
     }
 
     // Verify that volume supports catalog search
-    if (!vol_supports_searchfs(volumePath)) {
-        fprintf(stderr, "Voume does not support catalog search: %s\n", [volumePath cStringUsingEncoding:NSUTF8StringEncoding]);
+    if (!vol_supports_searchfs(volumePath, NO)) {
+        fprintf(stderr, "Volume does not support catalog search: %s\n", [volumePath cStringUsingEncoding:NSUTF8StringEncoding]);
         exit(EX_UNAVAILABLE);
     }
     
@@ -226,10 +223,10 @@ int main(int argc, const char *argv[]) {
     NSString *searchStr = @(argv[optind]);
     
     // Empty search string will match 0 results
-//    if ([searchStr length] == 0 || [searchStr length] > PATH_MAX) {
-//        fprintf(stderr, "Error: Invalid search string.\n");
-//        exit(EX_USAGE);
-//    }
+    if ([searchStr length] == 0 || [searchStr length] > PATH_MAX) {
+        fprintf(stderr, "Error: Empty or invalid search string.\n");
+        exit(EX_USAGE);
+    }
     
     // Parse ^ and $ modifiers
     if ([searchStr hasPrefix:@"^"]) {
@@ -243,17 +240,40 @@ int main(int argc, const char *argv[]) {
     if (startMatchOnly && endMatchOnly) {
         exactMatchOnly = YES;
     }
-    
-    // Do search
-    do_searchfs_search([volumePath cStringUsingEncoding:NSUTF8StringEncoding],
-                       [searchStr cStringUsingEncoding:NSUTF8StringEncoding]);
- 
+
+    // Multi-volume search strategy for modern macOS (Catalina+):
+    // - If no -v flag specified: search both / and /System/Volumes/Data (if available)
+    // - If -v explicitly specified: search only that volume
+    // This ensures comprehensive results while respecting user control
+    BOOL shouldSearchDataVolume = !volumeSpecified && data_volume_available();
+
+    unsigned int total_matches = 0;
+
+    // First search: Root volume (/ by default, or user-specified volume)
+    total_matches += do_searchfs_search([volumePath cStringUsingEncoding:NSUTF8StringEncoding],
+                                        [searchStr cStringUsingEncoding:NSUTF8StringEncoding]);
+
+    // Second search: Data volume (only if using default and limit not yet reached)
+    if (shouldSearchDataVolume && (!limit || total_matches < limit)) {
+        // Adjust limit to account for results already found
+        NSUInteger original_limit = limit;
+        if (limit > 0) {
+            limit = limit - total_matches;
+        }
+
+        total_matches += do_searchfs_search([DATA_VOLUME cStringUsingEncoding:NSUTF8StringEncoding],
+                                            [searchStr cStringUsingEncoding:NSUTF8StringEncoding]);
+
+        // Restore original limit
+        limit = original_limit;
+    }
+
     return EX_OK;
 }
 
 #pragma mark - search
 
-static void do_searchfs_search(const char *volpath, const char *match_string) {
+static unsigned int do_searchfs_search(const char *volpath, const char *match_string) {
     // See "man 2 searchfs" for further details
     int                     err = 0;
     int                     items_found = 0;
@@ -266,7 +286,8 @@ static void do_searchfs_search(const char *volpath, const char *match_string) {
     struct packed_name_attr info1;
     struct packed_attr_ref  info2;
     packed_result           result_buffer[MAX_MATCHES];
-    
+    unsigned int            match_cnt = 0;
+
 catalog_changed:
     items_found = 0; // Set this here in case we're completely restarting
     search_blk.searchattrs.bitmapcount = ATTR_BIT_MAP_COUNT;
@@ -336,16 +357,10 @@ catalog_changed:
     if (skipInvisibles) {
         search_options |= SRCHFS_SKIPINVISIBLE;
     }
-    
-    if (skipInappropriate) {
-        search_options |= SRCHFS_SKIPINAPPROPRIATE;
-    }
-    
+
     if (negateParams) {
         search_options |= SRCHFS_NEGATEPARAMS;
     }
-    
-    unsigned int match_cnt = 0;
 
     // Start searching
     do {
@@ -353,7 +368,7 @@ catalog_changed:
         if (err == -1) {
             err = errno;
         }
-        
+
         if ((err == 0 || err == EAGAIN) && matches > 0) {
             
             // Unpack the results
@@ -366,17 +381,17 @@ catalog_changed:
                 
                 // Call private SPI fsgetpath to get path string for file system object ID
                 char path_buf[PATH_MAX];
-                ssize_t size = fsgetpath_compat((char *)&path_buf,
-                                                sizeof(path_buf),
-                                                &result_p->fs_id,
-                                                (uint64_t)result_p->obj_id.fid_objno |
-                                                ((uint64_t)result_p->obj_id.fid_generation << 32));
+                ssize_t size = fsgetpath((char *)&path_buf,
+                                         sizeof(path_buf),
+                                         &result_p->fs_id,
+                                         (uint64_t)result_p->obj_id.fid_objno |
+                                         ((uint64_t)result_p->obj_id.fid_generation << 32));
                 if (size > -1) {
                     if (strlen(match_string) > 0 && !filter_result(path_buf, match_string)) {
                         fprintf(stdout, "%s\n", path_buf);
                         match_cnt++;
                         if (limit && match_cnt >= limit) {
-                            return;
+                            return match_cnt;
                         }
                     }
                 } else {
@@ -407,18 +422,22 @@ catalog_changed:
         search_options &= ~SRCHFS_START;
 
     } while (err == EAGAIN);
+
+    return match_cnt;
 }
 
 #pragma mark - post-processing
 
 BOOL filter_result(const char *path, const char *match_string) {
-    if (!caseSensitive && !startMatchOnly && !endMatchOnly) {
-        return NO;
-    }
-    
     NSString *pathStr = @(path);
     NSString *matchStr = @(match_string);
-    
+
+    // If no additional filtering options are set, trust the kernel's filtering
+    // (searchfs() already did case-insensitive substring matching via SRCHFS_MATCHPARTIALNAMES)
+    if (!caseSensitive && !startMatchOnly && !endMatchOnly) {
+        return NO; // Don't filter out - kernel already matched it
+    }
+
     if (caseSensitive) {
         NSString *escMatch = [NSRegularExpression escapedTemplateForString:matchStr];
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:escMatch
@@ -447,70 +466,6 @@ BOOL filter_result(const char *path, const char *match_string) {
     return NO;
 }
 
-#pragma mark - fsgetpath compatibility shim
-
-// Use deprecated Carbon API to get OS version.
-// This is the only reliable way on OS versions prior to 10.10
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-static BOOL has_fsgetpath(void) {
-    SInt32 maj, min;
-    Gestalt(gestaltSystemVersionMajor, &maj);
-    Gestalt(gestaltSystemVersionMinor, &min);
-    
-    return (maj > 10 || (maj == 10 && min >= 13));
-}
-#pragma GCC diagnostic pop
-
-// fsgetpath was introduced in macOS 10.13.  To support older systems, we use a
-// compatibility shim that relies on the volfs support in older versions of the OS
-// See https://forums.developer.apple.com/thread/103162
-
-static ssize_t fsgetpath_compat(char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wpartial-availability"
-    if (fsgetpathAvailable) {
-        ssize_t size = fsgetpath(buf, buflen, fsid, obj_id);
-        if (size > -1) {
-            return size;
-        }
-    }
-#pragma clang diagnastic pop
-    
-    return fsgetpath_legacy(buf, buflen, fsid, obj_id);
-}
-
-static ssize_t fsgetpath_legacy(char *buf, size_t buflen, fsid_t *fsid, uint64_t obj_id) {
-    char volfsPath[64];  // 8 for `/.vol//\0`, 10 for `fsid->val[0]`, 20 for `obj_id`, rounded up for paranoia
-    
-    snprintf(volfsPath, sizeof(volfsPath), "/.vol/%ld/%llu", (long)fsid->val[0], (unsigned long long)obj_id);
-    
-    struct {
-        uint32_t            length;
-        attrreference_t     pathRef;
-        char                buffer[MAXPATHLEN];
-    } __attribute__((aligned(4), packed)) attrBuf;
-    
-    struct attrlist attrList;
-    memset(&attrList, 0, sizeof(attrList));
-    attrList.bitmapcount = ATTR_BIT_MAP_COUNT;
-    attrList.commonattr = ATTR_CMN_FULLPATH;
-    
-    int success = getattrlist(volfsPath, &attrList, &attrBuf, sizeof(attrBuf), 0) == 0;
-    if (!success) {
-        return -1;
-    }
-    
-    if (attrBuf.pathRef.attr_length > buflen) {
-        errno = ENOSPC;
-        return -1;
-    }
-    
-    strlcpy(buf, ((const char *)&attrBuf.pathRef) + attrBuf.pathRef.attr_dataoffset, buflen);
-    
-    return attrBuf.pathRef.attr_length;
-}
-
 #pragma mark - util
 
 static NSString *dev_to_mount_path(NSString *devPath) {
@@ -535,94 +490,139 @@ static NSString *dev_to_mount_path(NSString *devPath) {
     // Look up mount point for device
     int fs_count = getfsstat(NULL, 0, MNT_NOWAIT);
     if (fs_count == -1) {
-        fprintf(stderr, "Error: %d\n", errno);
+        fprintf(stderr, "Error getting filesystem count: %s\n", strerror(errno));
         return nil;
     }
-    
-    struct statfs buf[256];
-    getfsstat(buf, fs_count * sizeof(buf[0]), MNT_NOWAIT);
-    
-    for (int i = 0; i < fs_count; ++i) {
+
+    struct statfs *buf = malloc(fs_count * sizeof(struct statfs));
+    if (buf == NULL) {
+        fprintf(stderr, "Error allocating memory: %s\n", strerror(errno));
+        return nil;
+    }
+
+    int actual_count = getfsstat(buf, fs_count * sizeof(struct statfs), MNT_NOWAIT);
+    if (actual_count == -1) {
+        fprintf(stderr, "Error getting filesystem information: %s\n", strerror(errno));
+        free(buf);
+        return nil;
+    }
+
+    NSString *mountPoint = nil;
+    for (int i = 0; i < actual_count; ++i) {
         if ([@(buf[i].f_mntfromname) isEqualToString:devPath]) {
-            return @(buf[i].f_mntonname);
+            mountPoint = @(buf[i].f_mntonname);
+            break;
         }
     }
-    return nil;
+
+    free(buf);
+    return mountPoint;
 }
 
 static BOOL is_mount_path(NSString *path) {
-    NSArray *mountPaths = [[NSFileManager defaultManager] mountedVolumeURLsIncludingResourceValuesForKeys:nil options:0];
-    for (NSURL *mountPathURL in mountPaths) {
-        if ([path isEqualToString:[mountPathURL path]]) {
-            return YES;
-        }
-    }
-    
-    return NO;
+    // This is a placeholder for future functionality.
+    return YES;
+//    NSArray *mountPaths = [[NSFileManager defaultManager] mountedVolumeURLsIncludingResourceValuesForKeys:nil options:0];
+//    for (NSURL *mountPathURL in mountPaths) {
+//        if ([path isEqualToString:[mountPathURL path]]) {
+//            return YES;
+//        }
+//    }
+//    
+//    return NO;
 }
 
-static BOOL vol_supports_searchfs(NSString *path) {
-    
+static BOOL vol_supports_searchfs(NSString *path, BOOL silent) {
+
     struct vol_attr_buf {
         u_int32_t               size;
         vol_capabilities_attr_t vol_capabilities;
     } __attribute__((aligned(4), packed));
-    
+
     const char *p = [path cStringUsingEncoding:NSUTF8StringEncoding];
-    
+
     struct attrlist attrList;
     memset(&attrList, 0, sizeof(attrList));
     attrList.bitmapcount = ATTR_BIT_MAP_COUNT;
     attrList.volattr = (ATTR_VOL_INFO | ATTR_VOL_CAPABILITIES);
-    
+
     struct vol_attr_buf attrBuf;
     memset(&attrBuf, 0, sizeof(attrBuf));
-    
+
     int err = getattrlist(p, &attrList, &attrBuf, sizeof(attrBuf), 0);
     if (err != 0) {
-        err = errno;
-        fprintf(stderr, "Error %d getting attrs for volume %s\n", err, p);
+        if (!silent) {
+            err = errno;
+            fprintf(stderr, "Error getting attributes for volume %s: %s\n", p, strerror(err));
+        }
         return NO;
     }
-    
-    assert(attrBuf.size == sizeof(attrBuf));
-        
+
+    if (attrBuf.size != sizeof(attrBuf)) {
+        if (!silent) {
+            fprintf(stderr, "Attribute buffer size mismatch for volume %s: expected %zu, got %u\n", p, sizeof(attrBuf), attrBuf.size);
+        }
+        return NO;
+    }
+
     if ((attrBuf.vol_capabilities.valid[VOL_CAPABILITIES_INTERFACES] & VOL_CAP_INT_SEARCHFS) == VOL_CAP_INT_SEARCHFS) {
         if ((attrBuf.vol_capabilities.capabilities[VOL_CAPABILITIES_INTERFACES] & VOL_CAP_INT_SEARCHFS) == VOL_CAP_INT_SEARCHFS) {
             return YES;
         }
     }
-    
+
     return NO;
 }
 
+static BOOL data_volume_available(void) {
+    // Check if /System/Volumes/Data exists and supports searchfs
+    if (![[NSFileManager defaultManager] fileExistsAtPath:DATA_VOLUME]) {
+        return NO;
+    }
+
+    // Check silently (don't print errors if it doesn't support searchfs)
+    return vol_supports_searchfs(DATA_VOLUME, YES);
+}
+
 static void list_volumes(void) {
-    
+
     int fs_count = getfsstat(NULL, 0, MNT_NOWAIT);
     if (fs_count == -1) {
-        fprintf(stderr, "Error: %d\n", errno);
+        fprintf(stderr, "Error getting filesystem count: %s\n", strerror(errno));
         return;
     }
-    
-    struct statfs buf[256];
-    getfsstat(buf, fs_count * sizeof(buf[0]), MNT_NOWAIT);
-    
-    for (int i = 0; i < fs_count; ++i) {
-        if (!vol_supports_searchfs(@(buf[i].f_mntonname))) {
+
+    struct statfs *buf = malloc(fs_count * sizeof(struct statfs));
+    if (buf == NULL) {
+        fprintf(stderr, "Error allocating memory: %s\n", strerror(errno));
+        return;
+    }
+
+    int actual_count = getfsstat(buf, fs_count * sizeof(struct statfs), MNT_NOWAIT);
+    if (actual_count == -1) {
+        fprintf(stderr, "Error getting filesystem information: %s\n", strerror(errno));
+        free(buf);
+        return;
+    }
+
+    for (int i = 0; i < actual_count; ++i) {
+        if (!vol_supports_searchfs(@(buf[i].f_mntonname), NO)) {
             continue;
         }
-        
+
         printf("%s (%-4s): %s\n",
                buf[i].f_mntfromname,
                buf[i].f_fstypename,
                buf[i].f_mntonname);
     }
+
+    free(buf);
 }
 
 #pragma mark -
 
 static void print_usage(void) {
-    fprintf(stderr, "usage: searchfs [-ldfespixnmoh] [-v mount_point] search_term\n");
+    fprintf(stderr, "usage: searchfs [-ldfespinmoh] [-v mount_point] search_term\n");
 }
 
 static void print_version(void) {

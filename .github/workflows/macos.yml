@@ -2,9 +2,9 @@ name: build
 
 on:
   push:
-    branches: [ master ]
+    branches: [ "*" ]
   pull_request:
-    branches: [ master ]
+    branches: [ "*" ]
 
 jobs:
   build:
@@ -13,5 +13,8 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
-      - run: make
+        uses: actions/checkout@v5
+      - name: Build binary
+        run: make all
+      - name: Run tests
+        run: python3 test.py

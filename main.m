@@ -626,5 +626,5 @@ static void print_usage(void) {
 }
 
 static void print_version(void) {
-    printf("searchfs version %.2f\n", program_version);
+    printf("searchfs version %.1f\n", program_version);
 }

@@ -26,7 +26,7 @@ standard output in the order they are found in the catalog. See the
 
 * [searchfs man page](https://sveinbjorn.org/files/manpages/searchfs.1.html) (HTML)
 
-## Build & Install
+## Install
 
 ```bash
 git clone https://github.com/sveinbjornt/searchfs.git
@@ -37,6 +37,13 @@ make install
 
 Installs binary by default into `/usr/local/bin/`. Man page goes into 
 `/usr/local/share/man/man1/`. These can be overridden with `DEST_DIR` and `MAN_DIR`.
+
+### Install via Homebrew
+
+```bash
+brew tap sveinbjornt/searchfs https://github.com/sveinbjornt/searchfs
+brew install sveinbjornt/searchfs/searchfs
+```
 
 ## Performance
 

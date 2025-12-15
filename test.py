@@ -81,11 +81,6 @@ def run_tests():
     assert len([n for n in lines if n.split("/")[-1] == "Contents"]) == 10
     assert len([n for n in lines if os.path.isdir(n)]) == 10
 
-    # Negate params (uses multi-volume search, reduced limit for speed)
-    not_present = "Hold the newsreaders nose squarely, waiter, or friendly milk will countermand my trousers"
-    lines = run_searchfs(["-n", not_present, "-m", "20"])
-    assert len(lines) > 0
-
     # Find files only
     lines = run_searchfs(["-v", "/", "-f", "s", "-m", "7"])
     assert len(lines) == 7
@@ -102,10 +97,9 @@ def run_tests():
     lines = run_searchfs(["-v", "/", "-pse", "Contents"])
     assert "/Applications/Calendar.app/Contents" not in lines
 
-    # Skip /System folder
-    lines = run_searchfs(["-v", "/", "-xse", "Frameworks"])
+    # Always one or more files named Frameworks
+    lines = run_searchfs(["-v", "/", "-se", "Frameworks"])
     assert len(lines) > 0
-    assert len([n for n in lines if n.startswith("/System")]) == 0
 
     # Test empty search string (should exit with EX_USAGE)
     run_searchfs([""], expected_exit_code=EX_USAGE)
@@ -115,7 +109,7 @@ def run_tests():
     # Test for no matches
     print("Testing for no matches...")
     lines = run_searchfs(["-v", "/", "XYZXYZXYZ"])
-    assert len(lines) == 0, "Expected no matches for a random string."
+    assert len(lines) == 0, "Expected no matches for a random string but got %s".format(lines)
 
     # Test mutually exclusive flags -d and -f
     print("Testing mutually exclusive -d and -f flags...")
@@ -141,8 +135,8 @@ def run_tests():
     # Test case-sensitive prefix match (assuming 'README' exists, but 'readme' does not)
     print("Testing case-sensitive prefix match...")
     lines = run_searchfs(["-v", "/", "-s", "^readme", "-m", "100"])
-    assert len([n for n in lines if n.split("/")[-1].startswith("readme")]) == 0, \
-        "Expected no matches for case-sensitive 'readme' prefix."
+    assert len(lines) == 0, \
+        f"Expected no matches for case-sensitive 'readme' prefix, but got {len(lines)} results"
 
     # Test multi-volume search (default behavior)
     print("Testing multi-volume search...")

@@ -144,6 +144,10 @@ int main(int argc, const char *argv[]) {
             
             case 'v':
                 volumePath = dev_to_mount_path([@(optarg) stringByResolvingSymlinksInPath]);
+                if (volumePath == nil) {
+                    fprintf(stderr, "Error: Could not resolve device to mount path for '%s'.\n", optarg);
+                    exit(EX_OSERR);
+                }
                 volumeSpecified = YES;
                 break;
             

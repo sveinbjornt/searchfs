@@ -13,6 +13,8 @@ searchfs.zip
 !default.perspectivev3
 xcuserdata
 *.dSYM/
+*.xcuserstate
+.DS_Store
 
 ## Other
 *.xccheckout
@@ -25,3 +27,4 @@ dsa_priv.pem
 Podfile.lock
 pods
 *.zip
+.claude

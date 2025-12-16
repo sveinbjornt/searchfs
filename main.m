@@ -36,12 +36,10 @@
 #include <errno.h>
 #include <err.h>
 #include <string.h>
-#include <unistd.h>
 #include <sysexits.h>
 #include <getopt.h>
 #include <sys/attr.h>
 #include <sys/param.h>
-#include <sys/attr.h>
 #include <sys/vnode.h>
 #include <sys/fsgetpath.h>
 #include <sys/mount.h>

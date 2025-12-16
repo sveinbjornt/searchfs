@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# Convert man page to HTML
 
 cd "$(dirname "$0")" || exit
 

@@ -20,7 +20,7 @@ standard output in the order they are found in the catalog. See the
 
 ## Download
 
-* [⬇ Download latest searchfs binary](https://sveinbjorn.org/files/software/searchfs.zip) (v0.4, <20 KB, Intel 64-bit, macOS 11.5 or later)
+* [⬇ Download latest searchfs binary](https://sveinbjorn.org/files/software/searchfs.zip) (v0.4, <20 KB, ARM/Intel 64-bit, macOS 11.5 or later)
 
 ## Documentation
 

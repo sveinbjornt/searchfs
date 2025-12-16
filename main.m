@@ -1,5 +1,5 @@
 /*
-    Copyright (c) 2017-2020, Sveinbjorn Thordarson <sveinbjorn@sveinbjorn.org>
+    Copyright (c) 2017-2025, Sveinbjorn Thordarson <sveinbjorn@sveinbjorn.org>
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -83,6 +83,7 @@ static BOOL data_volume_available(void);
 static void list_volumes(void);
 static void print_usage(void);
 static void print_version(void);
+static void print_help(void);
 
 
 static const float program_version = 0.4f;
@@ -122,9 +123,6 @@ static BOOL volumeSpecified = NO;
 
 int main(int argc, const char *argv[]) {
     NSString *volumePath = DEFAULT_VOLUME;
-
-
-
     
     // Line-buffered output
     setvbuf(stdout, NULL, _IOLBF, BUFSIZ);
@@ -189,7 +187,7 @@ int main(int argc, const char *argv[]) {
             case 'h':
             default:
             {
-                print_usage();
+                print_help();
                 exit(EX_OK);
             }
                 break;
@@ -628,3 +626,30 @@ static void print_usage(void) {
 static void print_version(void) {
     printf("searchfs version %.1f\n", program_version);
 }
+
+static void print_help(void) {
+    print_version();
+    printf("\n\
+searchfs [-ldfespinmoh] [-v mount_point] search_term\n\
+\n\
+Fast filename search on HFS+ and APFS volumes using filesystem catalog search.\n\
+Searches across both / and /System/Volumes/Data by default on modern macOS.\n\
+\n\
+Options:\n\
+\n\
+    -l, --list               List all mounted volumes that support catalog search\n\
+    -v, --volume <path>      Search specific volume (mount path or device name)\n\
+    -d, --dirs-only          Match directories only\n\
+    -f, --files-only         Match files only\n\
+    -e, --exact-match        Exact filename matches only\n\
+    -s, --case-sensitive     Case sensitive matching (default: case-insensitive)\n\
+    -p, --skip-packages      Don't match files inside packages\n\
+    -i, --skip-invisibles    Don't match invisible files or files in invisible dirs\n\
+    -n, --negate-params      Show files that do NOT match the search term\n\
+    -m, --limit <number>     Stop after finding <number> matches\n\
+    -o, --version            Print version and exit\n\
+    -h, --help               Print help and exit\n\
+\n\
+For further details, see 'man searchfs'.\n");
+}
+

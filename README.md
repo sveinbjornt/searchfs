@@ -1,3 +1,4 @@
+[![macOS](https://img.shields.io/badge/macOS-000000?style=flat&logo=apple&logoColor=white)](https://en.wikipedia.org/wiki/MacOS)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
 [![Language](https://img.shields.io/badge/language-objective--c-lightgrey)](https://en.wikipedia.org/wiki/Objective-C)
 [![Release](https://shields.io/github/v/release/sveinbjornt/searchfs?display_name=tag)](https://github.com/sveinbjornt/searchfs/releases)

@@ -119,7 +119,7 @@ static BOOL volumeSpecified = NO;
 
 #pragma mark -
 
-int main(int argc, const char *argv[]) {
+int main(int argc, const char *argv[]) { @autoreleasepool{
     NSString *volumePath = DEFAULT_VOLUME;
     
     // Line-buffered output
@@ -130,12 +130,12 @@ int main(int argc, const char *argv[]) {
     int long_index = 0;
     while ((optch = getopt_long(argc, (char *const *)argv, optstring, long_options, &long_index)) != -1) {
         switch (optch) {
-            
+                
             case 'l':
                 list_volumes();
                 exit(EX_OK);
                 break;
-            
+                
             case 'v':
                 volumePath = dev_to_mount_path([@(optarg) stringByResolvingSymlinksInPath]);
                 if (volumePath == nil) {
@@ -144,44 +144,44 @@ int main(int argc, const char *argv[]) {
                 }
                 volumeSpecified = YES;
                 break;
-            
+                
             case 'd':
                 dirsOnly = YES;
                 break;
-            
+                
             case 'f':
                 filesOnly = YES;
                 break;
-            
+                
             case 'e':
                 exactMatchOnly = YES;
                 break;
-            
+                
             case 's':
                 caseSensitive = YES;
                 break;
-            
+                
             case 'p':
                 skipPackages = YES;
                 break;
-            
+                
             case 'i':
                 skipInvisibles = YES;
                 break;
-
+                
             case 'n':
                 negateParams = YES;
                 break;
-            
+                
             case 'm':
                 limit = [@(optarg) integerValue];
                 break;
-            
+                
             case 'o':
                 print_version();
                 exit(EX_OK);
                 break;
-            
+                
             case 'h':
             default:
             {
@@ -197,14 +197,14 @@ int main(int argc, const char *argv[]) {
         print_usage();
         exit(EX_USAGE);
     }
-
+    
     // Verify that path is the mount path for a file system
     if (![volumePath isEqualToString:DEFAULT_VOLUME] && !is_mount_path(volumePath)) {
         fprintf(stderr, "Not a volume mount point: %s\n", [volumePath cStringUsingEncoding:NSUTF8StringEncoding]);
         print_usage();
         exit(EX_USAGE);
     }
-
+    
     // Verify that volume supports catalog search
     if (!vol_supports_searchfs(volumePath, NO)) {
         fprintf(stderr, "Volume does not support catalog search: %s\n", [volumePath cStringUsingEncoding:NSUTF8StringEncoding]);
@@ -236,19 +236,19 @@ int main(int argc, const char *argv[]) {
     if (startMatchOnly && endMatchOnly) {
         exactMatchOnly = YES;
     }
-
+    
     // Multi-volume search strategy for modern macOS (Catalina+):
     // - If no -v flag specified: search both / and /System/Volumes/Data (if available)
     // - If -v explicitly specified: search only that volume
     // This ensures comprehensive results while respecting user control
     BOOL shouldSearchDataVolume = !volumeSpecified && data_volume_available();
-
+    
     unsigned int total_matches = 0;
-
+    
     // First search: Root volume (/ by default, or user-specified volume)
     total_matches += do_searchfs_search([volumePath cStringUsingEncoding:NSUTF8StringEncoding],
                                         [searchStr cStringUsingEncoding:NSUTF8StringEncoding]);
-
+    
     // Second search: Data volume (only if using default and limit not yet reached)
     if (shouldSearchDataVolume && (!limit || total_matches < limit)) {
         // Adjust limit to account for results already found
@@ -256,16 +256,16 @@ int main(int argc, const char *argv[]) {
         if (limit > 0) {
             limit = limit - total_matches;
         }
-
+        
         total_matches += do_searchfs_search([DATA_VOLUME cStringUsingEncoding:NSUTF8StringEncoding],
                                             [searchStr cStringUsingEncoding:NSUTF8StringEncoding]);
-
+        
         // Restore original limit
         limit = original_limit;
     }
-
+    
     return EX_OK;
-}
+}}
 
 #pragma mark - search
 

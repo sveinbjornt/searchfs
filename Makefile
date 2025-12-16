@@ -15,10 +15,7 @@ main: main.m
 	/usr/bin/strip -xS "$(BIN_NAME)"
 
 universal: main.m
-	$(CC) $(FRAMEWORKS) -o "$(BIN_NAME)_arm64" $(CFLAGS) -arch arm64 main.m
-	$(CC) $(FRAMEWORKS) -o "$(BIN_NAME)_x86_64" $(CFLAGS) -arch x86_64 main.m
-	lipo -create "$(BIN_NAME)_arm64" "$(BIN_NAME)_x86_64" -output "$(BIN_NAME)"
-	rm "$(BIN_NAME)_arm64" "$(BIN_NAME)_x86_64"
+	$(CC) $(FRAMEWORKS) -o "$(BIN_NAME)" $(CFLAGS) -arch arm64 -arch x86_64 main.m
 	/usr/bin/strip -xS "$(BIN_NAME)"
 
 install:

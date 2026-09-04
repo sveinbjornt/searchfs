@@ -12,7 +12,7 @@ style="float: right; margin-left: 20px; margin-bottom: 20px;" align="right">
 `searchfs` is a macOS command line tool to quickly search by filename 
 on entire APFS and HFS+ volumes. Searching takes place at the driver 
 level using the file system catalog. This means the volume's directory 
-tree can be scanned much faster than with a standard recursive filename 
+tree can be scanned *much faster* than with a standard recursive filename 
 search using `find`.
 
 Search is case-insensitive by default. Matching files are printed to
@@ -57,7 +57,7 @@ faster than `find` on hard disk drives, which have higher seek times.
 
 ## Testing
 
-You need Python 3 installed.
+You need to have Python 3 installed.
 
 ```bash
 python3 test.py
@@ -92,6 +92,6 @@ See [CHANGES.md](CHANGES.md)
 
 ## BSD License
 
-Copyright © 2017-2025 [Sveinbjorn Thordarson](mailto:sveinbjorn@sveinbjorn.org)
+Copyright © 2017-2026 [Sveinbjorn Thordarson](mailto:sveinbjorn@sveinbjorn.org)
 
 See [LICENSE.txt](LICENSE.txt)
